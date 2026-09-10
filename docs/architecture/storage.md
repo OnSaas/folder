@@ -140,3 +140,10 @@ Dev: empty KV is enough.
 Prod / existing D1: `npx tsx server/scripts/migrate-d1-to-kv.ts` (optional; no-op if D1 binding missing). Dual-write is skipped — this fork has no production rows.
 
 After V2: no D1 binding, no Drizzle.
+
+## WebDAV
+
+Mount: `/dav` (Basic auth). Username = email or bucket name. Password hash `user.davPasswordHash` (SHA-256), set in Settings.
+
+OPTIONS unauthenticated (`DAV: 1, 2`). PROPFIND 207, GET/HEAD, PUT, MKCOL, DELETE, COPY/MOVE, LOCK/UNLOCK (dummy), PROPPATCH 207. Bytes stay on R2; metadata via FileRepository.
+

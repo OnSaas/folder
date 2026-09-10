@@ -8,6 +8,8 @@ export default defineNuxtConfig({
     "/api/**": { ssr: true },
     "/preview/**": { ssr: true },
     "/public/**": { cors: true, ssr: true },
+    "/dav": { ssr: true },
+    "/dav/**": { ssr: true },
   },
   modules: [
     "@nuxt/ui",

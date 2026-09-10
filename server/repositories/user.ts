@@ -25,6 +25,7 @@ export const userRepository = {
       status: data.status,
       provider: data.provider ?? null,
       locale: data.locale ?? null,
+      davPasswordHash: data.davPasswordHash ?? null,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt ?? now,
     };
@@ -44,6 +45,12 @@ export const userRepository = {
     const user = await userRepository.get(id);
     if (!user) return null;
     return userRepository.update({ ...user, locale });
+  },
+
+  async setDavPasswordHash(id: string, hash: string | null): Promise<UserRecord | null> {
+    const user = await userRepository.get(id);
+    if (!user) return null;
+    return userRepository.update({ ...user, davPasswordHash: hash });
   },
 
   async delete(id: string): Promise<void> {

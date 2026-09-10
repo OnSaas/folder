@@ -10,7 +10,7 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "node --import tsx --test server/storage/kv.test.ts",
+    "test": "node --import tsx --test server/storage/kv.test.ts server/utils/webdav.test.ts",
     "deploy": "node scripts/cf-deploy.mjs"
   },
   "dependencies": {

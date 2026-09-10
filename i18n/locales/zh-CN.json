@@ -158,7 +158,15 @@
   },
   "settings": {
     "title": "设置",
-    "language": "语言"
+    "language": "语言",
+    "dav": "WebDAV",
+    "davHint": "用 WebDAV 客户端连接此地址。用户名为登录邮箱，下方单独设置 WebDAV 密码。",
+    "davUrl": "WebDAV 地址",
+    "davPassword": "WebDAV 密码",
+    "davPasswordShort": "密码至少 8 位",
+    "saveDav": "保存 WebDAV 密码",
+    "davEnabled": "已设置 WebDAV 密码",
+    "davDisabled": "尚未设置 WebDAV 密码"
   },
   "usage": {
     "storage": "存储用量",
