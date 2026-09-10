@@ -1,4 +1,5 @@
 <script setup>
+const { t } = useI18n();
 const route = useRoute();
 const { setFavorite, deleteFiles, deleting } = useFileActions();
 const { openPublish } = usePublish();
@@ -8,10 +9,10 @@ const { openRename } = useRename();
 const { openShare } = useShare();
 const props = defineProps(["file"]);
 const emit = defineEmits(["delete"]);
-const fileMenuItems = ref([
+const fileMenuItems = computed(() => [
   [
     {
-      label: "Open",
+      label: t("file.open"),
       icon: "lucide:eye",
       type: "link",
       href: `/preview/${props.file.path}`,
@@ -19,11 +20,11 @@ const fileMenuItems = ref([
       disabled: props.file.type === "folder",
     },
     {
-      label: "Open With",
+      label: t("file.openWith"),
       icon: "lucide:external-link",
       children: [
         {
-          label: "Editor",
+          label: t("file.editor"),
           icon: "i-lucide-monitor",
           disabled: true,
         },
@@ -31,8 +32,8 @@ const fileMenuItems = ref([
     },
     {
       label: props.file.isFavorite
-        ? "Remove from Favorites"
-        : "Add to Favorites",
+        ? t("file.removeFavorite")
+        : t("file.addFavorite"),
       icon: "lucide:star",
       color: props.file.isFavorite && "error",
       onSelect: () => {
@@ -42,13 +43,13 @@ const fileMenuItems = ref([
   ],
   [
     {
-      label: "Download",
+      label: t("file.download"),
       icon: "i-lucide-download",
       href: `/api/files/${route.params.bucket}/download/${props.file.id}`,
       target: "_blank",
     },
     {
-      label: "Rename",
+      label: t("file.rename"),
       icon: "lucide:pencil",
       kbds: ["meta", "R"],
       onSelect: () => {
@@ -56,7 +57,7 @@ const fileMenuItems = ref([
       },
     },
     {
-      label: "Make a Copy",
+      label: t("file.makeCopy"),
       icon: "lucide:copy",
       kbds: ["meta", "D"],
       onSelect: () => {
@@ -66,21 +67,21 @@ const fileMenuItems = ref([
   ],
   [
     {
-      label: "Share",
+      label: t("file.share"),
       icon: "lucide:user-plus",
       onSelect: () => {
         openShare([props.file]);
       },
     },
     {
-      label: "Move to",
+      label: t("file.moveTo"),
       icon: "lucide:folder-input",
       onSelect: () => {
         openMove(props.file);
       },
     },
     {
-      label: "Publish",
+      label: t("file.publish"),
       icon: "lucide:globe",
       onSelect: () => {
         openPublish(props.file);
@@ -90,7 +91,7 @@ const fileMenuItems = ref([
       type: "separator",
     },
     {
-      label: "Move to Trash",
+      label: t("file.moveToTrash"),
       icon: "lucide:trash",
       kbds: ["meta", "backspace"],
       onSelect: () => {

@@ -1,15 +1,16 @@
 <script setup lang="ts">
 definePageMeta({ layout: "guest" });
+const { t } = useI18n();
 useSeoMeta({
-  title: "Sign In",
+  title: t("auth.signIn"),
 });
 </script>
 
 <template>
   <section class="grow flex justify-center items-center">
     <AuthCard
-      title="Sign In / Sign Up"
-      description="If you don’t have an account, one will be created."
+      :title="$t('auth.signInOrUp')"
+      :description="$t('auth.signInHint')"
     />
   </section>
 </template>

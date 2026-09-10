@@ -1,6 +1,7 @@
 import Copy from "~/components/MakeCopy.vue";
 
 export const useCopy = () => {
+  const { t } = useI18n();
   const route = useRoute();
   const overlay = useOverlay();
   const modal = overlay.create(Copy);
@@ -23,7 +24,7 @@ export const useCopy = () => {
       if (errors?.data?.message) {
         error.value = errors.data.message;
       } else {
-        error.value = "An error occurred. Please try again.";
+        error.value = t("errors.generic");
       }
     } finally {
       loading.value = false;

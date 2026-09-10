@@ -1,0 +1,188 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "close": "Close",
+    "confirm": "Confirm",
+    "submit": "Submit",
+    "update": "Update",
+    "apply": "Apply",
+    "reset": "Reset",
+    "new": "New",
+    "error": "Error",
+    "success": "Success",
+    "loading": "Loading",
+    "note": "Note"
+  },
+  "navigation": {
+    "home": "Home",
+    "files": "Files",
+    "settings": "Settings",
+    "recent": "Recent",
+    "favorites": "Favorites",
+    "sharedWithMe": "Shared With Me",
+    "published": "Published",
+    "trash": "Trash"
+  },
+  "header": {
+    "openSidebar": "Open Sidebar",
+    "search": "Search"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "zhCN": "简体中文"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signInOrUp": "Sign In / Sign Up",
+    "signInHint": "If you don’t have an account, one will be created.",
+    "welcomeDemo": "Welcome to the demo version of the app.",
+    "pleaseSignUp": "Please sign up to continue.",
+    "continueGithub": "Continue with GitHub",
+    "continueGoogle": "Continue with Google",
+    "logout": "Logout",
+    "sessionExpired": "Session expired",
+    "unauthorized": "Unauthorized",
+    "providerNotAllowed": "Provider not allowed",
+    "emailRequired": "Account must have an email address",
+    "emailNotAllowed": "Email not allowed",
+    "signupNotAllowed": "Sign up is not allowed",
+    "userInactive": "User is not active",
+    "demoNote": "This is a demo version only. Do not upload personal data. Data may be erased periodically.",
+    "hostYour": "Host Your"
+  },
+  "file": {
+    "upload": "Upload file",
+    "download": "Download",
+    "rename": "Rename",
+    "delete": "Delete file",
+    "open": "Open",
+    "openWith": "Open With",
+    "editor": "Editor",
+    "addFavorite": "Add to Favorites",
+    "removeFavorite": "Remove from Favorites",
+    "makeCopy": "Make a Copy",
+    "share": "Share",
+    "moveTo": "Move to",
+    "publish": "Publish",
+    "moveToTrash": "Move to Trash",
+    "newFile": "New File",
+    "path": "File Path",
+    "size": "File Size",
+    "contentType": "Content Type",
+    "visibility": "Visibility",
+    "addedOn": "Added On",
+    "modifiedOn": "Modified On",
+    "type": "Type"
+  },
+  "folder": {
+    "create": "New Folder",
+    "rename": "Rename folder",
+    "delete": "Delete folder",
+    "newFolder": "New Folder"
+  },
+  "bucket": {
+    "create": "Create Bucket",
+    "name": "Bucket Name",
+    "placeholder": "Enter bucket name",
+    "hint": "Choose a unique bucket name. It can't be changed later.",
+    "required": "Bucket name is required",
+    "tooShort": "Bucket name must be at least 6 characters",
+    "invalid": "Bucket name must start with a letter and can only contain lowercase letters, numbers, and hyphens",
+    "exists": "Bucket already exists"
+  },
+  "search": {
+    "placeholder": "Search",
+    "files": "files",
+    "matching": "files matching “{q}”..."
+  },
+  "empty": {
+    "noFiles": "No files found"
+  },
+  "list": {
+    "loadMore": "Load more"
+  },
+  "sort": {
+    "name": "Name",
+    "created": "Created",
+    "modified": "Modified"
+  },
+  "filter": {
+    "entireDrive": "Entire Drive",
+    "fileType": "File Type",
+    "visibility": "Visibility",
+    "sharing": "Sharing",
+    "shared": "Shared",
+    "notShared": "Not Shared",
+    "public": "public",
+    "private": "private"
+  },
+  "share": {
+    "title": "Share {count} items",
+    "description": "Share files and folders with others or make them public on the web.",
+    "emailPlaceholder": "Type Email Address",
+    "peopleWithAccess": "People with access"
+  },
+  "move": {
+    "title": "Move {name} {type}",
+    "description": "Move {type} to another folder",
+    "selectFolder": "Select Destination Folder",
+    "action": "Move"
+  },
+  "rename": {
+    "title": "Rename {name} {type}",
+    "description": "Change the name of {name}",
+    "newName": "New {type} name"
+  },
+  "copy": {
+    "title": "Make Copy",
+    "action": "Make Copy"
+  },
+  "publish": {
+    "confirm": "Confirm",
+    "websiteHint": "If you want to publish as a website, set a domain for it."
+  },
+  "upload": {
+    "drop": "Drop files here",
+    "progress": "Overall Progress"
+  },
+  "create": {
+    "title": "Create {type}",
+    "description": "Create a new {type}",
+    "nameRequired": "Name is required",
+    "needExtension": "File name must include extension",
+    "noSlash": "Name cannot contain '/'",
+    "placeholder": "Enter {type} name"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language"
+  },
+  "usage": {
+    "storage": "Storage Usage",
+    "usedOf": "{used} of {limit} used"
+  },
+  "errors": {
+    "notFound": "Resource not found",
+    "uploadFailed": "Upload failed",
+    "deleteFailed": "Delete failed",
+    "permission": "Permission error",
+    "fileNotFound": "File not found",
+    "folderNotFound": "Folder not found",
+    "bucketNotFound": "Bucket not found",
+    "network": "Network error",
+    "generic": "An error occurred. Please try again.",
+    "unauthorized": "Unauthorized Access",
+    "invalidPath": "Invalid Path",
+    "invalidRequest": "Invalid Request",
+    "nameExists": "Name already exists",
+    "targetExists": "Target already exists",
+    "pathConflict": "Path conflict: exists but is not a folder",
+    "cantMove": "Can't move item",
+    "cantCopy": "Can't make copy",
+    "cantDelete": "Can't delete item",
+    "forbidden": "Forbidden"
+  }
+}

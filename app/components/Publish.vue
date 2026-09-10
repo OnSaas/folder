@@ -32,7 +32,7 @@ const onConfirm = () => {
         </div>
         <template v-if="visibility === 'public' && file.type === 'folder'">
           <div class="text-sm font-light">
-            If you want to publish as a website, set a domain for it.
+            {{ $t("publish.websiteHint") }}
           </div>
           <div class="flex flex-row items-center justify-between gap-4">
             <label class="text-sm font-light min-w-24">Domain</label>
@@ -54,7 +54,7 @@ const onConfirm = () => {
           color="primary"
           variant="solid"
           @click="onConfirm"
-          >Confirm</UButton
+          >{{ $t("common.confirm") }}</UButton
         >
       </div>
     </template>

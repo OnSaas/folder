@@ -4,6 +4,7 @@ type CreateUserType = {
   email: string;
   avatar?: string;
   provider: "google" | "github";
+  locale?: "en" | "zh-CN" | null;
   createdAt: Date;
 };
 

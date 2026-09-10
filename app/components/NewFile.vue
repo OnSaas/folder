@@ -1,4 +1,5 @@
 <script setup>
+const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const open = ref(false);
@@ -11,10 +12,10 @@ const form = ref({
 
 const { folder } = useFolder();
 
-const items = ref([
+const items = computed(() => [
   [
     {
-      label: "New Folder",
+      label: t("folder.newFolder"),
       icon: "i-lucide-folder-plus",
       onSelect: () => {
         form.value.type = "folder";
@@ -23,7 +24,7 @@ const items = ref([
       kbds: ["meta", "n"],
     },
     {
-      label: "New File",
+      label: t("file.newFile"),
       icon: "i-lucide-file-plus",
       onSelect: () => {
         form.value.type = "file";
@@ -34,15 +35,15 @@ const items = ref([
 ]);
 const onSubmit = async () => {
   if (!form.value.name) {
-    error.value = "Name is required";
+    error.value = t("create.nameRequired");
     return;
   }
   if (form.value.type === "file" && !form.value.name.includes(".")) {
-    error.value = "File name must include extension";
+    error.value = t("create.needExtension");
     return;
   }
   if (form.value.name.includes("/")) {
-    error.value = "Name cannot contain '/'";
+    error.value = t("create.noSlash");
     return;
   }
   loading.value = true;
@@ -66,11 +67,9 @@ const onSubmit = async () => {
     loading.value = false;
   } catch (errors) {
     if (errors?.data?.message) {
-      console.error(errors?.data.message);
       error.value = errors.data.message;
     } else {
-      console.error(errors);
-      error.value = "An error occurred. Please try again.";
+      error.value = t("errors.generic");
     }
     loading.value = false;
   }
@@ -79,8 +78,8 @@ const onSubmit = async () => {
 <template>
   <UModal
     v-model:open="open"
-    :title="'Create ' + form.type"
-    :description="`Create a new ${form.type}`"
+    :title="$t('create.title', { type: form.type })"
+    :description="$t('create.description', { type: form.type })"
   >
     <template #body>
       <div class="flex flex-col gap-4">
@@ -91,17 +90,17 @@ const onSubmit = async () => {
           }`"
         >
           <UInput
-            label="Name"
+            :label="$t('sort.name')"
             v-model="form.name"
-            :placeholder="`Enter ${form.type} name`"
+            :placeholder="$t('create.placeholder', { type: form.type })"
             size="xl"
             class="w-full"
           />
         </UFormField>
         <div class="flex justify-end gap-4 mt-8">
-          <UButton label="Cancel" color="neutral" @click="open = false" />
+          <UButton :label="$t('common.cancel')" color="neutral" @click="open = false" />
           <UButton
-            label="Submit"
+            :label="$t('common.submit')"
             color="primary"
             variant="solid"
             :loading="loading"
@@ -117,6 +116,6 @@ const onSubmit = async () => {
       content: 'w-48',
     }"
   >
-    <UButton icon="lucide:plus" label="New" />
+    <UButton icon="lucide:plus" :label="$t('common.new')" />
   </UDropdownMenu>
 </template>

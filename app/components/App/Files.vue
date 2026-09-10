@@ -71,14 +71,14 @@ defineShortcuts({
       class="flex flex-col items-center justify-center min-h-[50vh] border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black rounded-lg p-8 opacity-50"
     >
       <Icon name="lucide:hard-drive" class="size-16 *:stroke-[1px]" />
-      <div class="text-lg">No files found</div>
+      <div class="text-lg">{{ $t("empty.noFiles") }}</div>
     </div>
     <UButton
       v-if="!isEnd && !loading"
       @click="loadMore"
       class="mx-auto max-w-48"
     >
-      Load more
+      {{ $t("list.loadMore") }}
     </UButton>
   </AppMain>
 </template>

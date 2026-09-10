@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { t } = useI18n();
 const open = ref(false);
 const emit = defineEmits(["update"]);
 const defaultValue = {
@@ -15,10 +16,10 @@ const fileTypeOptions = computed(() => {
     icon: fileIcons[key],
   }));
 });
-const sharedOptions = [
-  { value: "yes", label: "Shared" },
-  { value: "no", label: "Not Shared" },
-];
+const sharedOptions = computed(() => [
+  { value: "yes", label: t("filter.shared") },
+  { value: "no", label: t("filter.notShared") },
+]);
 const reset = () => {
   filters.value = { ...defaultValue };
   emit("update", null);
@@ -38,30 +39,30 @@ const hasFilters = computed(() => {
     </UChip>
     <template #content>
       <div class="flex flex-col gap-4 p-4 w-48">
-        <USwitch v-model="filters.drive" label="Entire Drive" />
+        <USwitch v-model="filters.drive" :label="$t('filter.entireDrive')" />
         <USelect
-          placeholder="File Type"
+          :placeholder="$t('filter.fileType')"
           v-model="filters.contentType"
           :items="fileTypeOptions"
           variant="outline"
         />
         <USelect
-          placeholder="Visibility"
+          :placeholder="$t('filter.visibility')"
           v-model="filters.visibility"
           :items="['public', 'private']"
           variant="outline"
         />
         <USelect
-          placeholder="Sharing"
+          :placeholder="$t('filter.sharing')"
           v-model="filters.shared"
           :items="sharedOptions"
           variant="outline"
         />
         <div class="flex flex-row items-center justify-between gap-2">
           <UButton color="primary" variant="solid" @click="onApply">
-            Apply
+            {{ $t("common.apply") }}
           </UButton>
-          <UButton @click="reset" color="primary"> Reset </UButton>
+          <UButton @click="reset" color="primary"> {{ $t("common.reset") }} </UButton>
         </div>
       </div>
     </template>

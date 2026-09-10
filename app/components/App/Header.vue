@@ -12,7 +12,7 @@ defineShortcuts({
     <Logo />
     <template v-if="route.params.bucket">
       <UTooltip
-        text="Open Sidebar"
+        :text="$t('header.openSidebar')"
         arrow
         :delay-duration="0"
         :kbds="['meta', 'B']"
@@ -27,6 +27,7 @@ defineShortcuts({
     </template>
     <Search v-if="route.params.bucket" />
     <div v-else class="grow"></div>
+    <LanguageSwitcher />
     <ColorMode />
     <ProfileMenu />
   </header>

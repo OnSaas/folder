@@ -144,14 +144,14 @@ const overallProgress = computed(() => {
     </UButtonGroup>
 
     <UModal v-model:open="isUploading" :dismissible="false">
-      <template #title>Uploading Files</template>
+      <template #title>{{ $t("file.upload") }}</template>
       <template #description
-        >{{ uploadedFiles }} / {{ totalFiles }} complete</template
+        >{{ uploadedFiles }} / {{ totalFiles }}</template
       >
       <template #body>
         <div class="space-y-4">
           <div>
-            <p class="mb-1 font-medium">Overall Progress</p>
+            <p class="mb-1 font-medium">{{ $t("upload.progress") }}</p>
             <UProgress :value="overallProgress" color="primary" />
           </div>
 

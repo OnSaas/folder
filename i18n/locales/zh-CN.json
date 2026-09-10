@@ -1,0 +1,188 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "close": "关闭",
+    "confirm": "确认",
+    "submit": "提交",
+    "update": "更新",
+    "apply": "应用",
+    "reset": "重置",
+    "new": "新建",
+    "error": "错误",
+    "success": "成功",
+    "loading": "加载中",
+    "note": "注意"
+  },
+  "navigation": {
+    "home": "首页",
+    "files": "文件",
+    "settings": "设置",
+    "recent": "最近",
+    "favorites": "收藏",
+    "sharedWithMe": "与我共享",
+    "published": "已发布",
+    "trash": "回收站"
+  },
+  "header": {
+    "openSidebar": "打开侧栏",
+    "search": "搜索"
+  },
+  "language": {
+    "label": "语言",
+    "en": "English",
+    "zhCN": "简体中文"
+  },
+  "auth": {
+    "signIn": "登录",
+    "signInOrUp": "登录 / 注册",
+    "signInHint": "没有账号会自动创建。",
+    "welcomeDemo": "欢迎使用演示版。",
+    "pleaseSignUp": "请登录后继续。",
+    "continueGithub": "使用 GitHub 继续",
+    "continueGoogle": "使用 Google 继续",
+    "logout": "退出",
+    "sessionExpired": "登录已过期",
+    "unauthorized": "未授权",
+    "providerNotAllowed": "不允许该登录方式",
+    "emailRequired": "账号必须有邮箱",
+    "emailNotAllowed": "邮箱不被允许",
+    "signupNotAllowed": "不允许注册",
+    "userInactive": "用户未激活",
+    "demoNote": "这是演示版，请勿上传个人数据。数据可能会被定期清除。",
+    "hostYour": "自行部署"
+  },
+  "file": {
+    "upload": "上传文件",
+    "download": "下载",
+    "rename": "重命名",
+    "delete": "删除文件",
+    "open": "打开",
+    "openWith": "打开方式",
+    "editor": "编辑器",
+    "addFavorite": "加入收藏",
+    "removeFavorite": "取消收藏",
+    "makeCopy": "创建副本",
+    "share": "分享",
+    "moveTo": "移动到",
+    "publish": "发布",
+    "moveToTrash": "移到回收站",
+    "newFile": "新建文件",
+    "path": "文件路径",
+    "size": "文件大小",
+    "contentType": "内容类型",
+    "visibility": "可见性",
+    "addedOn": "添加时间",
+    "modifiedOn": "修改时间",
+    "type": "类型"
+  },
+  "folder": {
+    "create": "新建文件夹",
+    "rename": "重命名文件夹",
+    "delete": "删除文件夹",
+    "newFolder": "新建文件夹"
+  },
+  "bucket": {
+    "create": "创建存储桶",
+    "name": "存储桶名称",
+    "placeholder": "输入存储桶名称",
+    "hint": "选择一个唯一名称，之后无法修改。",
+    "required": "存储桶名称必填",
+    "tooShort": "存储桶名称至少 6 个字符",
+    "invalid": "存储桶名称必须以字母开头，只能包含小写字母、数字和连字符",
+    "exists": "存储桶已存在"
+  },
+  "search": {
+    "placeholder": "搜索",
+    "files": "文件",
+    "matching": "匹配 “{q}” 的文件..."
+  },
+  "empty": {
+    "noFiles": "没有文件"
+  },
+  "list": {
+    "loadMore": "加载更多"
+  },
+  "sort": {
+    "name": "名称",
+    "created": "创建时间",
+    "modified": "修改时间"
+  },
+  "filter": {
+    "entireDrive": "整个云盘",
+    "fileType": "文件类型",
+    "visibility": "可见性",
+    "sharing": "分享",
+    "shared": "已分享",
+    "notShared": "未分享",
+    "public": "公开",
+    "private": "私有"
+  },
+  "share": {
+    "title": "分享 {count} 项",
+    "description": "与他人分享文件和文件夹，或将其公开到网页。",
+    "emailPlaceholder": "输入邮箱",
+    "peopleWithAccess": "有权限的人"
+  },
+  "move": {
+    "title": "移动 {name} {type}",
+    "description": "将 {type} 移动到其他文件夹",
+    "selectFolder": "选择目标文件夹",
+    "action": "移动"
+  },
+  "rename": {
+    "title": "重命名 {name} {type}",
+    "description": "修改 {name} 的名称",
+    "newName": "新的 {type} 名称"
+  },
+  "copy": {
+    "title": "创建副本",
+    "action": "创建副本"
+  },
+  "publish": {
+    "confirm": "确认",
+    "websiteHint": "如果要发布为网站，请设置域名。"
+  },
+  "upload": {
+    "drop": "把文件拖到这里",
+    "progress": "总体进度"
+  },
+  "create": {
+    "title": "新建 {type}",
+    "description": "新建一个 {type}",
+    "nameRequired": "名称必填",
+    "needExtension": "文件名必须包含扩展名",
+    "noSlash": "名称不能包含 '/'",
+    "placeholder": "输入 {type} 名称"
+  },
+  "settings": {
+    "title": "设置",
+    "language": "语言"
+  },
+  "usage": {
+    "storage": "存储用量",
+    "usedOf": "已用 {used} / {limit}"
+  },
+  "errors": {
+    "notFound": "资源不存在",
+    "uploadFailed": "上传失败",
+    "deleteFailed": "删除失败",
+    "permission": "权限错误",
+    "fileNotFound": "文件不存在",
+    "folderNotFound": "文件夹不存在",
+    "bucketNotFound": "存储桶不存在",
+    "network": "网络错误",
+    "generic": "出错了，请重试。",
+    "unauthorized": "未授权访问",
+    "invalidPath": "无效路径",
+    "invalidRequest": "无效请求",
+    "nameExists": "名称已存在",
+    "targetExists": "目标已存在",
+    "pathConflict": "路径冲突：已存在且不是文件夹",
+    "cantMove": "无法移动",
+    "cantCopy": "无法复制",
+    "cantDelete": "无法删除",
+    "forbidden": "禁止访问"
+  }
+}

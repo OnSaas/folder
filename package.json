@@ -10,10 +10,8 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:migrate:prod": "wrangler d1 migrations apply folder-demo --remote",
-    "deploy": "npm run build && wrangler deploy && npm run db:migrate:prod"
+    "test": "node --import tsx --test server/storage/kv.test.ts",
+    "deploy": "npm run build && wrangler deploy"
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
@@ -21,7 +19,7 @@
     "@iconify-json/simple-icons": "^1.2.26",
     "@nuxt/ui": "^3.0.0",
     "@nuxthub/core": "^0.8.17",
-    "drizzle-orm": "^0.40.0",
+    "@nuxtjs/i18n": "^9.5.6",
     "nuxt": "^3.16.0",
     "nuxt-auth-utils": "^0.5.16",
     "ulidx": "^2.4.1"
@@ -29,8 +27,8 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250310.0",
     "@nuxt/eslint": "^1.1.0",
-    "drizzle-kit": "^0.30.5",
     "eslint": "^9.21.0",
+    "tsx": "^4.19.3",
     "typescript": "^5.7.3",
     "wrangler": "^3.112.0"
   },

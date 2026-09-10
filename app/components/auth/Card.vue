@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { t } = useI18n();
 const { auth } = useAppConfig();
 const colorMode = useColorMode();
 const props = defineProps<{
@@ -11,7 +12,7 @@ const isDark = computed(() => colorMode.value === "dark");
   <div class="max-w-md w-full flex flex-col items-center gap-6">
     <img :src="isDark ? '/logo-dark.png' : '/logo.png'" class="w-30 mx-auto" />
     <p class="text-center text-sm">
-      Welcome to the demo version of the app.<br />Please sign up to continue.
+      {{ $t("auth.welcomeDemo") }}<br />{{ $t("auth.pleaseSignUp") }}
     </p>
     <UCard class="w-full">
       <h3 class="font-semibold text-neutral-950 dark:text-neutral-50">
@@ -27,17 +28,16 @@ const isDark = computed(() => colorMode.value === "dark");
           :provider="provider"
         />
         <UAlert
-          title="Note"
+          :title="$t('common.note')"
           icon="lucide:message-square-warning"
           color="neutral"
           variant="subtle"
-          description="This is a demo version only. Do not upload personal data. Data may be
-      erased periodically."
+          :description="$t('auth.demoNote')"
         />
       </div>
     </UCard>
     <span class="text-sm"
-      >Host Your
+      >{{ $t("auth.hostYour") }}
       <a href="https://folder.run" class="text-primary-500">Folder</a></span
     >
   </div>

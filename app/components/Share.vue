@@ -22,15 +22,15 @@ const onUpdate = () => {
 <template>
   <UModal
     v-if="files.length > 0"
-    :title="`Share ${files.length} items`"
-    description="Share files and folders with others or make public them to the web."
+    :title="$t('share.title', { count: files.length })"
+    :description="$t('share.description')"
   >
     <template #body>
       <div class="flex flex-col gap-4">
         <UInput
           v-model="email"
           type="email"
-          placeholder="Type Email Address"
+          :placeholder="$t('share.emailPlaceholder')"
           required
           @keydown.enter="addInvitee"
         />
@@ -42,7 +42,7 @@ const onUpdate = () => {
           />
         </div>
         <template v-if="members.length > 0">
-          <h3 class="font-semibold">People with access</h3>
+          <h3 class="font-semibold">{{ $t("share.peopleWithAccess") }}</h3>
           <div class="flex flex-col">
             <Member
               v-for="(member, index) in members"
@@ -60,7 +60,7 @@ const onUpdate = () => {
           color="primary"
           variant="solid"
           @click="onUpdate"
-          >Confirm</UButton
+          >{{ $t("common.confirm") }}</UButton
         >
       </div>
     </template>

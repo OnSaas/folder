@@ -11,8 +11,8 @@ const usedPercentage = computed(() => {
 </script>
 <template>
   <UFormField
-    label="Storage Usage"
-    :help="`${formatBytes(used)} of ${formatBytes(limit)} used`"
+    :label="$t('usage.storage')"
+    :help="$t('usage.usedOf', { used: formatBytes(used), limit: formatBytes(limit) })"
     size="sm"
     class="w-full"
   >

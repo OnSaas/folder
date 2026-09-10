@@ -1,128 +1,120 @@
-import {
-  asc,
-  eq,
-  ne,
-  sql,
-  and,
-  desc,
-  inArray,
-  isNull,
-  isNotNull,
-} from "drizzle-orm";
 import { ulid } from "ulidx";
-import { users, files, buckets, favorites, shared } from "../database/schema";
+import type { FileRecord, UserRecord } from "../storage/types";
+import { userRepository } from "../repositories/user";
+import { bucketRepository } from "../repositories/bucket";
+import { fileRepository } from "../repositories/file";
+import { shareRepository } from "../repositories/share";
+import { favoriteRepository } from "../repositories/favorite";
 
 const perPage = 12;
 
-const fileColumns = {
-  id: files.id,
-  name: files.name,
-  path: files.path,
-  type: files.type,
-  contentType: files.contentType,
-  size: files.size,
-  preview: files.preview,
-  visibility: files.visibility,
-  sharedCount: files.sharedCount,
-  count: files.count,
-  dimensions: files.dimensions,
-  createdAt: files.createdAt,
-  updatedAt: files.updatedAt,
-};
+type QueryString = Record<string, unknown>;
+
+function toApiUser(user: UserRecord) {
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    avatar: user.avatar,
+    country: user.country,
+    status: user.status,
+    provider: user.provider,
+    locale: user.locale ?? null,
+    createdAt: new Date(user.createdAt),
+  };
+}
+
+function toApiFile(file: FileRecord, extra: Record<string, unknown> = {}) {
+  return {
+    id: file.id,
+    name: file.name,
+    path: file.path,
+    type: file.type,
+    contentType: file.contentType,
+    size: file.size,
+    preview: file.preview,
+    visibility: file.visibility,
+    sharedCount: file.sharedCount,
+    count: file.count,
+    dimensions: file.dimensions,
+    bucketName: file.bucketName,
+    userId: file.userId,
+    parentId: file.parentId,
+    metadata: file.metadata,
+    createdAt: new Date(file.createdAt),
+    updatedAt: new Date(file.updatedAt),
+    deletedAt: file.deletedAt ? new Date(file.deletedAt) : null,
+    ...extra,
+  };
+}
+
+function sortFiles(list: FileRecord[], queryString: QueryString) {
+  const sortBy = (queryString.sortBy as string) || "createdAt";
+  const order = (queryString.order as string) || "desc";
+  const dir = order === "asc" ? 1 : -1;
+  return [...list].sort((a, b) => {
+    if (sortBy === "name") return a.name.localeCompare(b.name) * dir;
+    const av = (a as unknown as Record<string, unknown>)[sortBy];
+    const bv = (b as unknown as Record<string, unknown>)[sortBy];
+    const an = typeof av === "number" ? av : 0;
+    const bn = typeof bv === "number" ? bv : 0;
+    return (an - bn) * dir;
+  });
+}
+
+function paginate<T>(list: T[], queryString: QueryString) {
+  const page = Number(queryString.page || 1);
+  if (page <= 0) {
+    throw createError({ status: 404, message: "Invalid Request" });
+  }
+  const start = (page - 1) * perPage;
+  const data = list.slice(start, start + perPage);
+  const nextPage = data.length === perPage ? page + 1 : null;
+  return { data, nextPage };
+}
 
 export async function createUser(data: CreateUserType) {
-  return await useDrizzle().insert(users).values(data);
+  const now = Date.now();
+  return userRepository.create({
+    id: data.id,
+    name: data.name,
+    email: data.email,
+    avatar: data.avatar,
+    provider: data.provider,
+    status: "active",
+    createdAt: data.createdAt ? new Date(data.createdAt).getTime() : now,
+  });
 }
 
 export async function getUserByEmail(email: string) {
-  const result = await useDrizzle()
-    .select()
-    .from(users)
-    .where(eq(users.email, email));
-  if (result && result.length >= 0) {
-    return result[0];
-  }
-  return null;
+  const user = await userRepository.getByEmail(email);
+  return user ? toApiUser(user) : null;
 }
 
 export async function getUser(id: string) {
-  const result = await useDrizzle()
-    .select()
-    .from(users)
-    .where(eq(users.id, id));
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return null;
+  const user = await userRepository.get(id);
+  return user ? toApiUser(user) : null;
 }
 
-export const makeSorting = (dbQuery: any, model: any, queryString: any) => {
-  const { sortBy, order = "desc" } = queryString;
-
-  const sortColumn =
-    typeof sortBy === "string" && model[sortBy]
-      ? model[sortBy]
-      : model.createdAt;
-
-  if (sortColumn) {
-    return dbQuery.orderBy(
-      order === "asc" ? asc(sortColumn) : desc(sortColumn)
-    );
-  }
-  dbQuery;
-};
-
-export const makePaginate = (dbQuery: any, queryString: any) => {
-  const { page = 1 } = queryString;
-
-  if (Number(page) <= 0) {
-    throw createError({
-      status: 404,
-      message: "Invalid Request",
-    });
-  }
-
-  const offset = (Number(page) - 1) * Number(perPage);
-  return dbQuery.limit(Number(perPage)).offset(offset);
-};
-
 export const getBucket = async (name: string) => {
-  const result = await useDrizzle()
-    .select()
-    .from(buckets)
-    .where(eq(buckets.name, name));
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return null;
+  return bucketRepository.getByName(name);
 };
+
 export const getBucketSize = async (bucketName: string) => {
-  const result = await useDrizzle()
-    .select({
-      size: sql`SUM(${files.size})`,
-    })
-    .from(files)
-    .where(and(eq(files.bucketName, bucketName), ne(files.type, "folder")));
-  if (result && result.length > 0) {
-    return result[0].size || 0;
-  }
-  return 0;
+  const bucket = await bucketRepository.getByName(bucketName);
+  if (!bucket) return 0;
+  const files = await fileRepository.listByUser(bucket.userId);
+  return files
+    .filter((file) => file.bucketName === bucketName && file.type !== "folder" && !file.deletedAt)
+    .reduce((sum, file) => sum + (file.size || 0), 0);
 };
+
 export const getUserBucket = async (userId: string) => {
   try {
-    const result = await useDrizzle()
-      .select()
-      .from(buckets)
-      .where(eq(buckets.userId, userId));
-    if (result && result.length > 0) {
-      const size = await getBucketSize(result[0].name);
-
-      return {
-        ...result[0],
-        size,
-      };
-    }
-    return null;
+    const bucket = await bucketRepository.getByUser(userId);
+    if (!bucket) return null;
+    const size = await getBucketSize(bucket.name);
+    return { ...bucket, size };
   } catch (error) {
     console.log(error);
     return null;
@@ -132,87 +124,66 @@ export const getUserBucket = async (userId: string) => {
 export const createBucket = async (name: string, userId: string) => {
   const hasBucket = await getBucket(name);
   if (hasBucket) {
-    throw createError({
-      status: 400,
-      message: "Bucket already exists",
-    });
+    throw createError({ status: 400, message: "Bucket already exists" });
   }
-  const response = await useDrizzle()
-    .insert(buckets)
-    .values({
-      id: ulid() as string,
-      name,
-      userId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    })
-    .returning();
-  if (response && response.length > 0) {
-    return response[0];
-  }
+  const now = Date.now();
+  return bucketRepository.create({
+    id: ulid() as string,
+    name,
+    userId,
+    size: 0,
+    count: 0,
+    createdAt: now,
+    updatedAt: now,
+  });
 };
 
-// @ts-ignore
-export const getFiles = async (event, userId) => {
-  const queryString = getQuery(event);
-  const params = getRouterParams(event);
+async function withFavorite(userId: string, files: FileRecord[]) {
+  const favs = await favoriteRepository.list(userId);
+  const set = new Set(favs);
+  return files.map((file) =>
+    toApiFile(file, { isFavorite: set.has(file.id) ? new Date() : null })
+  );
+}
 
-  const filters = [];
-
-  let dataQuery = useDrizzle()
-    .select({
-      ...fileColumns,
-      isFavorite: favorites.createdAt,
-    })
-    .from(files)
-    .leftJoin(
-      favorites,
-      and(eq(files.id, favorites.fileId), eq(favorites.userId, userId))
-    )
-    .$dynamic();
-
-  // 🔸 Filtering
-  filters.push(eq(files.userId, userId));
-  filters.push(isNull(files.deletedAt));
-  if (params.id) {
-    filters.push(eq(files.parentId, params.id));
-  } else {
-    filters.push(eq(files.parentId, "root"));
-  }
+function applyFileFilters(list: FileRecord[], queryString: QueryString) {
+  let next = list.filter((file) => !file.deletedAt);
   if (queryString["filters[contentType]"]) {
-    filters.push(
-      eq(files.contentType, queryString["filters[contentType]"] as string)
+    next = next.filter(
+      (file) => file.contentType === queryString["filters[contentType]"]
     );
   }
-  if (queryString["filters[shared]"]) {
-    if (queryString["filters[shared]"] === "no")
-      filters.push(eq(files.sharedCount, 0));
-    if (queryString["filters[shared]"] === "yes")
-      filters.push(ne(files.sharedCount, 0));
+  if (queryString["filters[shared]"] === "no") {
+    next = next.filter((file) => file.sharedCount === 0);
+  }
+  if (queryString["filters[shared]"] === "yes") {
+    next = next.filter((file) => file.sharedCount !== 0);
   }
   if (
     queryString["filters[visibility]"] &&
     ["public", "private"].includes(queryString["filters[visibility]"] as string)
   ) {
-    filters.push(
-      eq(files.visibility, queryString["filters[visibility]"] as string)
+    next = next.filter(
+      (file) => file.visibility === queryString["filters[visibility]"]
     );
   }
-  dataQuery = dataQuery.where(and(...filters));
+  return next;
+}
 
-  // 🔸 Sorting
-  dataQuery = makeSorting(dataQuery, files, queryString);
-
-  // 🔸 Pagination
-  dataQuery = makePaginate(dataQuery, queryString);
-
-  const data = await dataQuery;
-
-  const nextPage =
-    data.length === perPage ? Number(queryString.page) + 1 : null;
+// @ts-ignore
+export const getFiles = async (event, userId: string) => {
+  const queryString = getQuery(event) as QueryString;
+  const params = getRouterParams(event);
+  const parentId = (params.id as string) || "root";
+  const bucketName = params.bucket as string;
+  let list = await fileRepository.listChildren(bucketName, parentId);
+  list = list.filter((file) => file.userId === userId);
+  list = applyFileFilters(list, queryString);
+  const sorted = sortFiles(list, queryString);
+  const page = paginate(sorted, queryString);
   return {
-    data,
-    nextPage,
+    data: await withFavorite(userId, page.data),
+    nextPage: page.nextPage,
   };
 };
 
@@ -221,33 +192,26 @@ export const getFile = async (
   path: string,
   deletedAt?: Date
 ) => {
-  const filters = [];
-  filters.push(eq(files.bucketName, bucketName));
-  filters.push(eq(files.path, path));
   if (deletedAt) {
-    filters.push(eq(files.deletedAt, deletedAt));
-  } else {
-    filters.push(isNull(files.deletedAt));
+    const bucket = await bucketRepository.getByName(bucketName);
+    if (!bucket) return null;
+    const trash = await fileRepository.listTrash(bucket.userId);
+    const match = trash.find(
+      (file) =>
+        file.bucketName === bucketName &&
+        file.path === path &&
+        file.deletedAt &&
+        Math.abs(file.deletedAt - deletedAt.getTime()) < 1000
+    );
+    return match ? toApiFile(match) : null;
   }
-  const result = await useDrizzle()
-    .select()
-    .from(files)
-    .where(and(...filters));
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return null;
+  const file = await fileRepository.getByPath(bucketName, path);
+  return file ? toApiFile(file) : null;
 };
 
 export const getFolder = async (id: string) => {
-  const result = await useDrizzle()
-    .select()
-    .from(files)
-    .where(eq(files.id, id));
-  if (result && result.length > 0) {
-    return result[0];
-  }
-  return null;
+  const file = await fileRepository.get(id);
+  return file ? toApiFile(file) : null;
 };
 
 export const ensurePath = async (
@@ -256,50 +220,41 @@ export const ensurePath = async (
   userId: string,
   isFile?: boolean
 ) => {
-  // pathShouldStartWithBucketName(bucketName, fullPath);
-  // replace leading, trailing and duplicate slashes
   fullPath = cleanPath(fullPath);
-  // Check and create parent folders if they don't exist
   const pathSegments = fullPath.split("/");
-  // Remove the file name (last segment)
   if (isFile) pathSegments.pop();
-  // const fileName = pathSegments.pop();
   let current = { id: "root", path: "" };
-  // If there are path segments (not a root-level file)
   if (pathSegments.length > 1) {
-    // Set the current path to the bucket
     current.path = pathSegments[0];
-    // Iterate through each folder level
     for (let i = 1; i < pathSegments.length; i++) {
-      // Build the current path level
       current.path = current.path
         ? `${current.path}/${pathSegments[i]}`
         : pathSegments[i];
-
-      // Check if this folder level exists
-      const folderExists = await getFile(bucketName, current.path);
-
+      const folderExists = await fileRepository.getByPath(bucketName, current.path);
       if (!folderExists) {
-        // Create the missing folder
         const folderId = ulid() as string;
-        const folderData = {
+        const now = Date.now();
+        await fileRepository.create({
           id: folderId,
           name: pathSegments[i],
           path: current.path,
           type: "folder",
           contentType: "folder",
           size: 0,
+          visibility: "inherit",
+          preview: null,
+          dimensions: null,
+          count: 0,
           parentId: current.id,
-          bucketName: bucketName,
-          userId: userId,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-
-        await useDrizzle().insert(files).values(folderData);
+          bucketName,
+          userId,
+          sharedCount: 0,
+          createdAt: now,
+          updatedAt: now,
+          deletedAt: null,
+        });
         current.id = folderId;
       } else {
-        // If folder exists but isn't a folder type, throw error
         if (folderExists.type !== "folder") {
           throw createError({
             status: 400,
@@ -320,71 +275,55 @@ export const insertUpdateFile = async (
   data: any
 ) => {
   const { userId } = data;
-  // let parent = await getParent(bucketName, parentId);
   const path = cleanPath(data.fullPath);
-
-  const file = await getFile(bucketName, path);
-  if (file) {
-    return await useDrizzle()
-      .update(files)
-      .set({
+  const existing = await fileRepository.getByPath(bucketName, path);
+  if (existing) {
+    return toApiFile(
+      await fileRepository.update({
+        ...existing,
         size: data.size,
-        updatedAt: new Date(),
-      })
-      .where(eq(files.path, path));
+        updatedAt: Date.now(),
+      }, existing)
+    );
   }
-  let parent = await ensurePath(bucketName, path, userId, true);
+  const parent = await ensurePath(bucketName, path, userId, true);
   const fileType = getFileType(data.contentType);
   const preview = fileType === "image" ? path : null;
   if (preview) {
     await setFolderThumbnail(parent.id, preview);
   }
-  const insertFile = {
+  const now = Date.now();
+  const created = await fileRepository.create({
     id: ulid() as string,
     name: path.split("/").pop() || "",
-    path: path,
+    path,
     type: fileType,
     size: data.size,
     contentType: data.contentType,
     dimensions: data.dimensions,
-    userId: data.userId,
-    bucketName: bucketName,
-    parentId: parent.id,
-    createdAt: new Date(),
-    updatedAt: new Date(),
+    visibility: "inherit",
     preview,
-  };
-  const response = await useDrizzle()
-    .insert(files)
-    .values(insertFile)
-    .returning();
-  if (response && response.length > 0) {
-    await updateCount(parent.id);
-    return response[0];
-  }
+    count: 0,
+    userId,
+    bucketName,
+    parentId: parent.id,
+    sharedCount: 0,
+    createdAt: now,
+    updatedAt: now,
+    deletedAt: null,
+  });
+  await updateCount(parent.id);
+  return toApiFile(created);
 };
 
 export const getParent = async (bucketName: string, id: string) => {
-  let parent = {
-    path: bucketName,
-    id: "root",
-  };
+  let parent = { path: bucketName, id: "root" };
   if (id && id !== "root") {
-    const folder = await getFolder(id);
-    if (
-      folder &&
-      folder.type === "folder" &&
-      folder.bucketName === bucketName
-    ) {
-      parent = {
-        path: folder.path,
-        id: folder.id,
-      };
+    const folder = await fileRepository.get(id);
+    if (folder && folder.type === "folder" && folder.bucketName === bucketName) {
+      parent = { path: folder.path, id: folder.id };
     } else {
-      throw createError({
-        status: 404,
-        message: "Folder not found",
-      });
+      throw createError({ status: 404, message: "Folder not found" });
     }
   }
   return parent;
@@ -396,10 +335,8 @@ export const isParentPublic = async (
 ): Promise<boolean> => {
   const parentPath = path.split("/").slice(0, -1).join("/");
   if (parentPath) {
-    const parent = await getFile(bucketName, parentPath);
-    if (parent && parent.visibility === "public") {
-      return true;
-    }
+    const parent = await fileRepository.getByPath(bucketName, parentPath);
+    if (parent && parent.visibility === "public") return true;
     if (parent && parent.visibility === "inherit") {
       return await isParentPublic(bucketName, parentPath);
     }
@@ -408,300 +345,173 @@ export const isParentPublic = async (
 };
 
 export const searchFiles = async (bucketName: string, query: string) => {
-  const filters = [];
-
-  let dataQuery = useDrizzle()
-    .select({
-      id: files.id,
-      name: files.name,
-      path: files.path,
-      type: files.type,
-    })
-    .from(files)
-    .$dynamic();
-
-  // 🔸 Filtering
-  filters.push(eq(files.bucketName, bucketName));
-  filters.push(isNull(files.deletedAt));
-  if (query) {
-    filters.push(sql`LOWER(name) LIKE LOWER(${`%${query}%`})`);
-  }
-  dataQuery = dataQuery.where(and(...filters));
-
-  const data = await dataQuery;
-  return data;
+  const bucket = await bucketRepository.getByName(bucketName);
+  if (!bucket) return [];
+  const files = await fileRepository.listByUser(bucket.userId);
+  const q = query.toLowerCase();
+  return files
+    .filter(
+      (file) =>
+        file.bucketName === bucketName &&
+        !file.deletedAt &&
+        file.name.toLowerCase().includes(q)
+    )
+    .map((file) => ({
+      id: file.id,
+      name: file.name,
+      path: file.path,
+      type: file.type,
+    }));
 };
 
 export const setFavorite = async (userId: string, fileId: string) => {
-  const favorite = await useDrizzle()
-    .select()
-    .from(favorites)
-    .where(and(eq(favorites.userId, userId), eq(favorites.fileId, fileId)));
-  if (favorite && favorite.length > 0) {
-    return await useDrizzle()
-      .update(favorites)
-      .set({
-        createdAt: new Date(),
-      })
-      .where(and(eq(favorites.userId, userId), eq(favorites.fileId, fileId)));
-  } else {
-    return await useDrizzle().insert(favorites).values({
-      userId,
-      fileId,
-      createdAt: new Date(),
-    });
-  }
+  await favoriteRepository.add(userId, fileId);
+  return { success: true };
 };
+
 export const unsetFavorite = async (userId: string, fileId: string) => {
-  return await useDrizzle()
-    .delete(favorites)
-    .where(and(eq(favorites.userId, userId), eq(favorites.fileId, fileId)));
+  await favoriteRepository.remove(userId, fileId);
+  return { success: true };
 };
+
 export const ensureFile = async (bucketName: string, id: string) => {
-  const file = await getFolder(id);
+  const file = await fileRepository.get(id);
   if (!file || file.bucketName !== bucketName) {
-    throw createError({
-      status: 404,
-      message: "File not found",
-    });
+    throw createError({ status: 404, message: "File not found" });
   }
-  return file;
+  return toApiFile(file);
 };
 
 export const getBreadcrumb = async (bucketName: string, path: string) => {
-  // Skip if path is empty or just the bucket
   if (!path || path === bucketName) return [];
-
-  // Generate all potential parent paths
   const pathSegments = path.split("/");
-  const pathsToQuery = [];
-
+  const pathsToQuery: string[] = [];
   for (let i = 1; i <= pathSegments.length; i++) {
     const currentPath = pathSegments.slice(0, i).join("/");
-    if (currentPath && currentPath !== bucketName) {
-      pathsToQuery.push(currentPath);
-    }
+    if (currentPath && currentPath !== bucketName) pathsToQuery.push(currentPath);
   }
-
-  if (pathsToQuery.length === 0) return [];
-
-  // Query all paths in a single database call
-  const breadcrumbFiles = await useDrizzle()
-    .select({
-      id: files.id,
-      name: files.name,
-      path: files.path,
-      visibility: files.visibility,
-      size: files.size,
-      count: files.count,
-    })
-    .from(files)
-    .where(
-      and(eq(files.bucketName, bucketName), inArray(files.path, pathsToQuery))
-    )
-    .orderBy(sql`LENGTH(${files.path})`);
-
-  // Sort breadcrumbs in path order since SQL might return in a different order
-  const breadcrumbMap = breadcrumbFiles.reduce(
-    (acc: { [key: string]: any }, file) => {
-      acc[file.path] = file;
-      return acc;
-    },
-    {}
-  );
-
-  // Now create the ordered breadcrumbs array
-  const orderedBreadcrumbs = [];
+  const ordered = [];
   for (const currentPath of pathsToQuery) {
-    if (breadcrumbMap[currentPath]) {
-      orderedBreadcrumbs.push({
-        id: breadcrumbMap[currentPath].id,
-        name: breadcrumbMap[currentPath].name,
-        visibility: breadcrumbMap[currentPath].visibility,
+    const file = await fileRepository.getByPath(bucketName, currentPath);
+    if (file) {
+      ordered.push({
+        id: file.id,
+        name: file.name,
+        visibility: file.visibility,
       });
     }
   }
-
-  return orderedBreadcrumbs;
+  return ordered;
 };
 
 export const getFavorites = async (event: any, userId: string) => {
-  const queryString = getQuery(event);
+  const queryString = getQuery(event) as QueryString;
   const params = getRouterParams(event);
-  let dataQuery = useDrizzle()
-    .select({
-      ...fileColumns,
-      isFavorite: favorites.createdAt,
-    })
-    .from(favorites)
-    .leftJoin(files, eq(favorites.fileId, files.id))
-    .where(
-      and(
-        eq(favorites.userId, userId),
-        eq(files.bucketName, params.bucket),
-        isNull(files.deletedAt)
-      )
-    )
-    .$dynamic();
-
-  // 🔸 Sorting
-  dataQuery = makeSorting(dataQuery, files, queryString);
-
-  // 🔸 Pagination
-  dataQuery = makePaginate(dataQuery, queryString);
-
-  const data = await dataQuery;
-
-  const nextPage =
-    data.length === perPage ? Number(queryString.page) + 1 : null;
+  const ids = await favoriteRepository.list(userId);
+  const files = (await fileRepository.getMany(ids)).filter(
+    (file) => file.bucketName === params.bucket && !file.deletedAt
+  );
+  const sorted = sortFiles(files, queryString);
+  const page = paginate(sorted, queryString);
   return {
-    data,
-    nextPage,
+    data: await withFavorite(userId, page.data),
+    nextPage: page.nextPage,
   };
 };
+
 export const getSharedWithMe = async (userId: string, queryString: any) => {
-  let dataQuery = useDrizzle()
-    .select({
-      ...fileColumns,
-      role: shared.role,
-      sharedAt: shared.createdAt,
-    })
-    .from(shared)
-    .leftJoin(files, eq(shared.fileId, files.id))
-    .where(and(eq(shared.userId, userId), isNull(files.deletedAt)))
-    .$dynamic();
-
-  // 🔸 Sorting
-  dataQuery = makeSorting(dataQuery, files, queryString);
-
-  // 🔸 Pagination
-  dataQuery = makePaginate(dataQuery, queryString);
-
-  const data = await dataQuery;
-
-  const nextPage =
-    data.length === perPage ? Number(queryString.page) + 1 : null;
+  const shares = await shareRepository.listByUser(userId);
+  const files = await fileRepository.getMany(shares.map((s) => s.fileId));
+  const live = files.filter((file) => !file.deletedAt);
+  const sorted = sortFiles(live, queryString);
+  const page = paginate(sorted, queryString);
+  const shareByFile = new Map(shares.map((s) => [s.fileId, s]));
   return {
-    data,
-    nextPage,
+    data: page.data.map((file) =>
+      toApiFile(file, {
+        role: shareByFile.get(file.id)?.role,
+        sharedAt: shareByFile.get(file.id)
+          ? new Date(shareByFile.get(file.id)!.createdAt)
+          : null,
+      })
+    ),
+    nextPage: page.nextPage,
   };
 };
 
 export const getPublished = async (event: any, userId: string) => {
-  const queryString = getQuery(event);
-  const filters = [];
-
-  let dataQuery = useDrizzle()
-    .select({
-      ...fileColumns,
-      isFavorite: favorites.createdAt,
-    })
-    .from(files)
-    .leftJoin(
-      favorites,
-      and(eq(files.id, favorites.fileId), eq(favorites.userId, userId))
-    )
-    .$dynamic();
-
-  // 🔸 Filtering
-  filters.push(eq(files.userId, userId));
-  filters.push(eq(files.visibility, "public"));
-  filters.push(isNull(files.deletedAt));
-
-  dataQuery = dataQuery.where(and(...filters));
-
-  // 🔸 Sorting
-  dataQuery = makeSorting(dataQuery, files, queryString);
-
-  // 🔸 Pagination
-  dataQuery = makePaginate(dataQuery, queryString);
-
-  const data = await dataQuery;
-
-  const nextPage =
-    data.length === perPage ? Number(queryString.page) + 1 : null;
+  const queryString = getQuery(event) as QueryString;
+  const files = (await fileRepository.listByUser(userId)).filter(
+    (file) => file.visibility === "public" && !file.deletedAt
+  );
+  const sorted = sortFiles(files, queryString);
+  const page = paginate(sorted, queryString);
   return {
-    data,
-    nextPage,
+    data: await withFavorite(userId, page.data),
+    nextPage: page.nextPage,
   };
 };
+
 export const getRecent = async (event: any, userId: string) => {
-  const queryString = getQuery(event);
-  const filters = [];
-
-  let dataQuery = useDrizzle()
-    .select({
-      ...fileColumns,
-      isFavorite: favorites.createdAt,
-    })
-    .from(files)
-    .leftJoin(
-      favorites,
-      and(eq(files.id, favorites.fileId), eq(favorites.userId, userId))
-    )
-    .$dynamic();
-
-  // 🔸 Filtering
-  filters.push(eq(files.userId, userId));
-  filters.push(isNull(files.deletedAt));
-  dataQuery = dataQuery.where(and(...filters));
-
-  // 🔸 Sorting
-  dataQuery = dataQuery.orderBy(desc(files.updatedAt));
-
-  // 🔸 Pagination
-  dataQuery = makePaginate(dataQuery, queryString);
-
-  const data = await dataQuery;
-
-  const nextPage =
-    data.length === perPage ? Number(queryString.page) + 1 : null;
+  const queryString = getQuery(event) as QueryString;
+  const files = (await fileRepository.listByUser(userId)).filter(
+    (file) => !file.deletedAt
+  );
+  const sorted = sortFiles(files, { ...queryString, sortBy: "updatedAt", order: "desc" });
+  const page = paginate(sorted, queryString);
   return {
-    data,
-    nextPage,
+    data: await withFavorite(userId, page.data),
+    nextPage: page.nextPage,
   };
 };
 
 export const setVisibility = async (bucketName: string, data: IFile) => {
-  const file = await getFolder(data.id);
+  const file = await fileRepository.get(data.id);
   if (file && file.bucketName === bucketName) {
-    return await useDrizzle()
-      .update(files)
-      .set({
-        visibility: data.visibility,
-        updatedAt: new Date(),
-      })
-      .where(eq(files.id, file.id));
+    await fileRepository.update({ ...file, visibility: data.visibility }, file);
+    return { success: true };
   }
+  return { success: false };
 };
 
 export const shareFiles = async (
   bucketName: string,
   files: IFile[],
   members: Member[]
-) => {};
+) => {
+  for (const file of files) {
+    await ensureFile(bucketName, file.id);
+    const record = await fileRepository.get(file.id);
+    if (!record) continue;
+    for (const member of members) {
+      const user = await userRepository.getByEmail(member.email);
+      if (!user) continue;
+      await shareRepository.create({
+        fileId: file.id,
+        userId: user.id,
+        role: member.role || "viewer",
+        createdAt: Date.now(),
+      });
+    }
+    const shares = await shareRepository.listByFile(file.id);
+    await fileRepository.update({ ...record, sharedCount: shares.length }, record);
+  }
+  return { success: true };
+};
 
 export const getNestedFolders = async (bucketName: string, userId: string) => {
-  const folders = await useDrizzle()
-    .select()
-    .from(files)
-    .where(
-      and(
-        eq(files.bucketName, bucketName),
-        eq(files.userId, userId),
-        eq(files.type, "folder")
-      )
-    );
-  if (folders && folders.length > 0) {
-    return makeNested(folders, "root");
-  }
+  const folders = (await fileRepository.listByUser(userId)).filter(
+    (file) =>
+      file.bucketName === bucketName && file.type === "folder" && !file.deletedAt
+  );
+  if (folders.length > 0) return makeNested(folders, "root");
   return [];
 };
 
-export const makeNested = (list: any[], parentId: string): any[] => {
+export const makeNested = (list: FileRecord[], parentId: string): any[] => {
   return list
     .filter((item) => item.parentId === parentId)
-    .map((item: IFile) => ({
+    .map((item) => ({
       id: item.id,
       path: item.path,
       label: item.name,
@@ -711,21 +521,14 @@ export const makeNested = (list: any[], parentId: string): any[] => {
 };
 
 export const updateContentType = async (id: string, contentType: string) => {
-  return await useDrizzle()
-    .update(files)
-    .set({
-      contentType,
-    })
-    .where(eq(files.id, id));
+  const file = await fileRepository.get(id);
+  if (!file) return;
+  return fileRepository.update({ ...file, contentType }, file);
 };
 
 export const getComputedVisibility = async (bucketName: string, file: any) => {
-  if (file.visibility && file.visibility !== "inherit") {
-    return file.visibility;
-  }
-  if (file.parentId === "root") {
-    return "private";
-  }
+  if (file.visibility && file.visibility !== "inherit") return file.visibility;
+  if (file.parentId === "root") return "private";
   const folderPath = file.path.split("/").slice(0, -1).join("/");
   const breadcrumb = await getBreadcrumb(bucketName, folderPath);
   return getVisibility(breadcrumb, file.visibility);
@@ -742,118 +545,51 @@ export const transformList = async (bucketName: string, files: any) => {
 };
 
 export const setFolderThumbnail = async (id: string, previewUrl: string) => {
-  // Get the folder
-  const folder = await getFolder(id);
-
+  if (id === "root") return;
+  const folder = await fileRepository.get(id);
   if (folder && folder.type === "folder") {
-    try {
-      // Parse existing previews or initialize empty array
-      let previews = [];
-      if (folder.preview) {
-        try {
-          previews = JSON.parse(folder.preview);
-          // Ensure it's an array
-          if (!Array.isArray(previews)) {
-            previews = [];
-          }
-        } catch (e) {
-          // If parsing fails, start with empty array
-          previews = [];
-        }
+    let previews: string[] = [];
+    if (folder.preview) {
+      try {
+        const parsed = JSON.parse(folder.preview);
+        if (Array.isArray(parsed)) previews = parsed;
+      } catch {
+        previews = [];
       }
-
-      // Check if the preview URL already exists in the array
-      const existingIndex = previews.indexOf(previewUrl);
-
-      // Only add if not already present and less than 4 previews
-      if (existingIndex === -1 && previews.length < 4) {
-        previews.push(previewUrl);
-        // Update the folder in the database
-        await useDrizzle()
-          .update(files)
-          .set({
-            preview: JSON.stringify(previews),
-            updatedAt: new Date(),
-          })
-          .where(eq(files.id, id));
-      }
-    } catch (error) {
-      console.error("Error updating folder thumbnail:", error);
-      throw error;
+    }
+    if (!previews.includes(previewUrl) && previews.length < 4) {
+      previews.push(previewUrl);
+      await fileRepository.update(
+        { ...folder, preview: JSON.stringify(previews) },
+        folder
+      );
     }
   }
 };
 
 export const updateCount = async (id: string) => {
   if (id === "root") return;
-  return await useDrizzle()
-    .update(files)
-    .set({
-      count: sql`count + 1`,
-    })
-    .where(eq(files.id, id));
+  const folder = await fileRepository.get(id);
+  if (!folder) return;
+  await fileRepository.update({ ...folder, count: (folder.count || 0) + 1 }, folder);
 };
 
-export const getFilesRecursive = async (
-  bucketName: string,
-  items: string[]
-) => {
-  const allIds: string[] = [];
-  const response = await useDrizzle()
-    .select()
-    .from(files)
-    .where(and(eq(files.bucketName, bucketName), inArray(files.id, items)));
-  if (response && response.length > 0) {
-    const folderIds: string[] = [];
-    response.forEach((item) => {
-      if (item.type === "folder") folderIds.push(item.id);
-      allIds.push(item.id);
-    });
-    if (folderIds.length > 0) {
-      const children = await useDrizzle()
-        .select()
-        .from(files)
-        .where(
-          and(
-            eq(files.bucketName, bucketName),
-            inArray(files.parentId, folderIds)
-          )
-        );
-      if (children && children.length > 0) {
-        const childrenIds = await getFilesRecursive(
-          bucketName,
-          children?.map((item) => item.id) || []
-        );
-        if (childrenIds) {
-          allIds.push(...childrenIds);
-        }
-      }
-    }
-  }
-  return allIds;
+export const getFilesRecursive = async (bucketName: string, items: string[]) => {
+  return fileRepository.listRecursiveIds(bucketName, items);
 };
 
 export const deleteFiles = async (bucketName: string, items: string[]) => {
-  const deletedAt = new Date();
+  const deletedAt = Date.now();
   const allIds = await getFilesRecursive(bucketName, items);
-  const response = await useDrizzle()
-    .update(files)
-    .set({ deletedAt })
-    .where(
-      and(
-        eq(files.bucketName, bucketName),
-        inArray(files.id, allIds),
-        isNull(files.deletedAt)
-      )
-    )
-    .returning();
-
+  const records = await fileRepository.getMany(allIds);
   await Promise.all(
-    response.map(async (item) => {
+    records.map(async (item) => {
+      if (item.deletedAt) return;
+      await fileRepository.update({ ...item, deletedAt }, item);
       if (item.type !== "folder") {
         await moveBlob(
           item.path,
-          `.trash/${bucketName}/${item.deletedAt?.toISOString()}/${item.path}`
+          `.trash/${bucketName}/${new Date(deletedAt).toISOString()}/${item.path}`
         );
       }
     })
@@ -862,35 +598,120 @@ export const deleteFiles = async (bucketName: string, items: string[]) => {
 };
 
 export const getTrashed = async (event: any, userId: string) => {
-  const queryString = getQuery(event);
-  const filters = [];
-
-  let dataQuery = useDrizzle()
-    .select({
-      ...fileColumns,
-      deletedAt: files.deletedAt,
-    })
-    .from(files)
-    .$dynamic();
-
-  // 🔸 Filtering
-  filters.push(eq(files.userId, userId));
-  filters.push(isNotNull(files.deletedAt));
-
-  dataQuery = dataQuery.where(and(...filters));
-
-  // 🔸 Sorting
-  dataQuery = dataQuery.orderBy(desc(files.deletedAt));
-
-  // 🔸 Pagination
-  dataQuery = makePaginate(dataQuery, queryString);
-
-  const data = await dataQuery;
-
-  const nextPage =
-    data.length === perPage ? Number(queryString.page) + 1 : null;
+  const queryString = getQuery(event) as QueryString;
+  const files = await fileRepository.listTrash(userId);
+  const sorted = [...files].sort((a, b) => (b.deletedAt || 0) - (a.deletedAt || 0));
+  const page = paginate(sorted, queryString);
   return {
-    data,
-    nextPage,
+    data: page.data.map((file) => toApiFile(file)),
+    nextPage: page.nextPage,
   };
+};
+
+async function rewriteDescendants(
+  file: FileRecord,
+  oldPath: string,
+  newPath: string
+) {
+  const ids = await fileRepository.listRecursiveIds(file.bucketName, [file.id]);
+  const records = await fileRepository.getMany(ids);
+  for (const child of records) {
+    if (child.id === file.id) continue;
+    if (!child.path.startsWith(oldPath + "/") && child.path !== oldPath) continue;
+    const nextPath = newPath + child.path.slice(oldPath.length);
+    const previousPath = child.path;
+    await fileRepository.update({ ...child, path: nextPath }, child);
+    if (child.type !== "folder") {
+      await moveBlob(previousPath, nextPath);
+    }
+  }
+}
+
+export const renameFile = async (
+  bucketName: string,
+  fileId: string,
+  name: string
+) => {
+  const file = await fileRepository.get(fileId);
+  if (!file || file.bucketName !== bucketName) {
+    throw createError({ status: 404, message: "File not found" });
+  }
+  const parentPath = file.path.split("/").slice(0, -1).join("/");
+  const newPath = parentPath ? `${parentPath}/${name}` : name;
+  const conflict = await fileRepository.getByPath(bucketName, newPath);
+  if (conflict && conflict.id !== file.id) {
+    throw createError({ status: 400, message: "Name already exists" });
+  }
+  const oldPath = file.path;
+  if (file.type !== "folder") {
+    await moveBlob(oldPath, newPath);
+  }
+  await fileRepository.update({ ...file, name, path: newPath }, file);
+  if (file.type === "folder") {
+    await rewriteDescendants(file, oldPath, newPath);
+  }
+  return { success: true };
+};
+
+export const moveFile = async (
+  bucketName: string,
+  fileId: string,
+  parentId: string
+) => {
+  const file = await fileRepository.get(fileId);
+  if (!file || file.bucketName !== bucketName) {
+    throw createError({ status: 404, message: "File not found" });
+  }
+  const parent = await getParent(bucketName, parentId);
+  const newPath = cleanPath(`${parent.path}/${file.name}`);
+  if (newPath === file.path) return { success: true };
+  const conflict = await fileRepository.getByPath(bucketName, newPath);
+  if (conflict) {
+    throw createError({ status: 400, message: "Target already exists" });
+  }
+  const oldPath = file.path;
+  if (file.type !== "folder") {
+    await moveBlob(oldPath, newPath);
+  }
+  await fileRepository.update(
+    { ...file, parentId: parent.id, path: newPath },
+    file
+  );
+  if (file.type === "folder") {
+    await rewriteDescendants({ ...file, parentId: parent.id, path: newPath }, oldPath, newPath);
+  }
+  return { success: true };
+};
+
+export const copyFileItem = async (
+  bucketName: string,
+  fileId: string,
+  name: string
+) => {
+  const file = await fileRepository.get(fileId);
+  if (!file || file.bucketName !== bucketName) {
+    throw createError({ status: 404, message: "File not found" });
+  }
+  const parentPath = file.path.split("/").slice(0, -1).join("/");
+  const newPath = parentPath ? `${parentPath}/${name}` : name;
+  const conflict = await fileRepository.getByPath(bucketName, newPath);
+  if (conflict) {
+    throw createError({ status: 400, message: "Name already exists" });
+  }
+  if (file.type !== "folder") {
+    await copyBlob(file.path, newPath);
+  }
+  const now = Date.now();
+  const created = await fileRepository.create({
+    ...file,
+    id: ulid() as string,
+    name,
+    path: newPath,
+    createdAt: now,
+    updatedAt: now,
+    deletedAt: null,
+    sharedCount: 0,
+  });
+  await updateCount(file.parentId);
+  return toApiFile(created);
 };

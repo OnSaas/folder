@@ -19,7 +19,7 @@ An open-source, serverless **Digital Asset Management (DAM)** software that help
 
 - **Frontend**: Nuxt, TailwindCSS, Nuxt UI
 - **Backend**: Nitro
-- **Database**: Cloudflare D1
+- **Database**: Cloudflare KV (metadata)
 - **Storage**: Cloudflare R2
 - **Authentication**: OAuth (Google, GitHub)
 - **Server**: Cloudflare Workers
@@ -42,14 +42,14 @@ An open-source, serverless **Digital Asset Management (DAM)** software that help
 
 ## Prerequisites
 
-1. **Cloudflare Account** (for R2, D1 and Hosting)
+1. **Cloudflare Account** (for R2, KV and Hosting)
 2. **GitHub/Google Cloud Account** (for OAuth authentication)
 3. **Domain name** (optional, for custom domains)
 
 ## Deployment
 
 1. **Create Cloudflare resources**
-   - Set up **D1 Database**
+   - Set up **KV Namespace**
    - Create an **R2 Bucket**
 2. **Set up OAuth**
    - Create an OAuth App in **GitHub Developer Settings** (or Google Cloud Console)

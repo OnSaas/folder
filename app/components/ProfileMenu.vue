@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { clear, user } = useUserSession();
+const { t } = useI18n();
 const signOut = () => {
   clear();
   navigateTo("/auth/signin");
@@ -16,7 +17,12 @@ const items = computed(() => [
   ],
   [
     {
-      label: "Logout",
+      label: t("navigation.settings"),
+      icon: "i-lucide-settings",
+      onSelect: () => navigateTo("/settings"),
+    },
+    {
+      label: t("auth.logout"),
       icon: "i-lucide-log-out",
       onSelect: signOut,
     },

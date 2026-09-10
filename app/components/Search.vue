@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const route = useRoute();
+const { t } = useI18n();
 const open = ref(false);
 const searchTerm = ref("");
 
@@ -40,8 +41,8 @@ const groups = computed(() => [
   {
     id: "Files",
     label: searchTerm.value
-      ? `files matching “${searchTerm.value}”...`
-      : "files",
+      ? t("search.matching", { q: searchTerm.value })
+      : t("search.files"),
     items: files.value || [],
   },
 ]);
@@ -56,7 +57,7 @@ const groups = computed(() => [
     }"
   >
     <UButton
-      label="Search"
+      :label="$t('header.search')"
       icon="lucide:search"
       variant="outline"
       class="sm:grow my-2 mx-auto max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl cursor-text"
@@ -65,7 +66,7 @@ const groups = computed(() => [
     </UButton>
     <template #content>
       <UCommandPalette
-        placeholder="Search"
+        :placeholder="$t('search.placeholder')"
         v-model:search-term="searchTerm"
         :loading="status === 'pending'"
         :groups="groups"

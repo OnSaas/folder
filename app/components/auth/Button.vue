@@ -1,20 +1,21 @@
 <script setup lang="ts">
+const { t } = useI18n();
 defineProps<{
   provider: "linkedin" | "github" | "google";
   label?: string;
 }>();
-const providers = {
+const providers = computed(() => ({
   github: {
     icon: "logos:github-icon",
-    label: "Continue with GitHub",
+    label: t("auth.continueGithub"),
     class: "size-6 *:fill-white dark:*:fill-neutral-900",
   },
   google: {
     icon: "logos:google-icon",
-    label: "Continue with Google",
+    label: t("auth.continueGoogle"),
     class: "size-6",
   },
-};
+}));
 </script>
 <template>
   <UButton

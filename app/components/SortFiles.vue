@@ -1,13 +1,14 @@
 <script setup lang="ts">
+const { t } = useI18n();
 const sort = ref({
   sortBy: "createdAt",
   order: "asc",
 });
-const sortOptions = [
-  { value: "name", label: "Name" },
-  { value: "updatedAt", label: "Modified" },
-  { value: "createdAt", label: "Created" },
-];
+const sortOptions = computed(() => [
+  { value: "name", label: t("sort.name") },
+  { value: "updatedAt", label: t("sort.modified") },
+  { value: "createdAt", label: t("sort.created") },
+]);
 const emit = defineEmits(["update"]);
 watch(
   sort,

@@ -10,18 +10,19 @@ const onSelect = (folder: IFile) => {
   parent.value = folder;
 };
 const onMove = () => {
+  if (!parent.value) return;
   emit("submit", parent.value.id);
 };
 </script>
 <template>
   <UModal
-    :title="`Move ${file.name} ${file.type}`"
-    :description="`Move ${file.type} to another folder`"
+    :title="$t('move.title', { name: file.name, type: file.type })"
+    :description="$t('move.description', { type: file.type })"
   >
     <template #body>
       <UAlert
         v-if="error"
-        title="Error"
+        :title="$t('common.error')"
         :description="error"
         color="error"
         variant="soft"
@@ -29,13 +30,13 @@ const onMove = () => {
         class="mb-4"
       />
 
-      <UFormField label="Select Destination Folder">
+      <UFormField :label="$t('move.selectFolder')">
         <FolderPicker @select="onSelect" />
       </UFormField>
       <UAlert
         v-if="parent"
         class="mt-4"
-        title="Move"
+        :title="$t('move.action')"
         color="neutral"
         variant="subtle"
       >
@@ -54,7 +55,7 @@ const onMove = () => {
         :loading="loading"
         color="primary"
         variant="solid"
-        >Move</UButton
+        >{{ $t("move.action") }}</UButton
       >
     </template>
   </UModal>

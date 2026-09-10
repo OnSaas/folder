@@ -7,7 +7,7 @@ defineProps<{
   <div class="flex flex-col items-start justify-start gap-4 h-full p-6">
     <div>
       <div class="text-neutral-950 text-xs font-semibold uppercase">
-        File Path
+        {{ $t("file.path") }}
       </div>
       <div class="text-neutral-700 font-light">
         {{ file?.path }}
@@ -15,19 +15,21 @@ defineProps<{
     </div>
     <div>
       <div class="text-neutral-950 text-xs font-semibold uppercase">
-        File Size
+        {{ $t("file.size") }}
       </div>
       <div class="text-neutral-700 font-light">
         {{ formatBytes(file?.size ?? 0) }}
       </div>
     </div>
     <div>
-      <div class="text-neutral-950 text-xs font-semibold uppercase">Type</div>
+      <div class="text-neutral-950 text-xs font-semibold uppercase">
+        {{ $t("file.type") }}
+      </div>
       <div class="text-neutral-700 font-light">{{ file?.type }}</div>
     </div>
     <div>
       <div class="text-neutral-950 text-xs font-semibold uppercase">
-        Content Type
+        {{ $t("file.contentType") }}
       </div>
       <div class="text-neutral-700 font-light">
         {{ file?.contentType }}
@@ -35,7 +37,7 @@ defineProps<{
     </div>
     <div>
       <div class="text-neutral-950 text-xs font-semibold uppercase">
-        Visibility
+        {{ $t("file.visibility") }}
       </div>
       <div class="text-neutral-700 font-light">
         {{ file?.visibility }}
@@ -43,7 +45,7 @@ defineProps<{
     </div>
     <div>
       <div class="text-neutral-950 text-xs font-semibold uppercase">
-        Added On
+        {{ $t("file.addedOn") }}
       </div>
       <div class="text-neutral-700 font-light">
         {{ file?.createdAt }}
@@ -51,7 +53,7 @@ defineProps<{
     </div>
     <div v-if="file?.updatedAt !== file?.createdAt">
       <div class="text-neutral-950 text-xs font-semibold uppercase">
-        Modified On
+        {{ $t("file.modifiedOn") }}
       </div>
       <div class="text-neutral-700 font-light">
         {{ file?.updatedAt }}

@@ -1,42 +1,48 @@
 <script setup lang="ts">
 const route = useRoute();
 const { aside } = useAside();
+const { t } = useI18n();
 
-const items = ref([
+const items = computed(() => [
   [
     {
-      label: "Home",
+      label: t("navigation.home"),
       icon: "lucide:home",
       to: `/${route.params.bucket}/`,
     },
     {
-      label: "Recent",
+      label: t("navigation.recent"),
       icon: "lucide:clock",
       to: `/${route.params.bucket}/recent`,
     },
     {
-      label: "Favorites",
+      label: t("navigation.favorites"),
       icon: "lucide:star",
       to: `/${route.params.bucket}/favorites`,
     },
   ],
   [
     {
-      label: "Shared With Me",
+      label: t("navigation.sharedWithMe"),
       icon: "lucide:circle-user",
       to: `/${route.params.bucket}/shared`,
     },
     {
-      label: "Published",
+      label: t("navigation.published"),
       icon: "lucide:globe",
       to: `/${route.params.bucket}/published`,
     },
   ],
   [
     {
-      label: "Trash",
+      label: t("navigation.trash"),
       icon: "lucide:trash",
       to: `/${route.params.bucket}/trash`,
+    },
+    {
+      label: t("navigation.settings"),
+      icon: "lucide:settings",
+      to: "/settings",
     },
   ],
 ]);

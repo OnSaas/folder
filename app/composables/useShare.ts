@@ -1,6 +1,7 @@
 import Share from "~/components/Share.vue";
 
 export const useShare = () => {
+  const { t } = useI18n();
   const route = useRoute();
   const overlay = useOverlay();
   const modal = overlay.create(Share);
@@ -23,7 +24,7 @@ export const useShare = () => {
         console.error(errors?.data.message);
         error.value = errors.data.message;
       } else {
-        error.value = "An error occurred. Please try again.";
+        error.value = t("errors.generic");
       }
     } finally {
       sharing.value = false;

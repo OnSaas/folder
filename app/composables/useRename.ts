@@ -1,6 +1,7 @@
 import Rename from "~/components/Rename.vue";
 
 export const useRename = () => {
+  const { t } = useI18n();
   const route = useRoute();
   const toast = useToast();
   const overlay = useOverlay();
@@ -22,7 +23,7 @@ export const useRename = () => {
       )) as { status?: string };
       if (data?.status && data?.status === "success") {
         toast.add({
-          title: "Success",
+          title: t("common.success"),
           color: "success",
         });
         modal.close();
@@ -32,7 +33,7 @@ export const useRename = () => {
         console.error(errors?.data.message);
         error.value = errors.data.message;
       } else {
-        error.value = "An error occurred. Please try again.";
+        error.value = t("errors.generic");
       }
     } finally {
       loading.value = false;

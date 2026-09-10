@@ -34,6 +34,6 @@ const { isOverDropZone } = useDropZone(dropZoneRef, {
     >
       <Icon name="lucide:upload" :class="['size-8 *:stroke-[1.5px]']" />
     </div>
-    <span class="text-sm opacity-70">Drop files here</span>
+    <span class="text-sm opacity-70">{{ $t("upload.drop") }}</span>
   </div>
 </template>
