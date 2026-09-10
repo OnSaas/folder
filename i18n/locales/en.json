@@ -162,6 +162,7 @@
     "dav": "WebDAV",
     "davHint": "Use a WebDAV client with this URL. Username is your email. Set a dedicated WebDAV password below.",
     "davUrl": "WebDAV URL",
+    "davUsername": "Username",
     "davPassword": "WebDAV password",
     "davPasswordShort": "Password must be at least 8 characters",
     "saveDav": "Save WebDAV password",

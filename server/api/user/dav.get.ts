@@ -6,5 +6,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ status: 401, message: "Unauthorized" });
   }
   const record = await userRepository.get(user.id);
-  return { enabled: Boolean(record?.davPasswordHash), path: "/dav" };
+  return {
+    enabled: Boolean(record?.davPasswordHash),
+    path: "/dav",
+    username: record?.email || user.email || "",
+  };
 });

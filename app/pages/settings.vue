@@ -51,6 +51,9 @@ const saveDav = async () => {
         <UFormField :label="t('settings.davUrl')">
           <UInput :model-value="davUrl" readonly />
         </UFormField>
+        <UFormField :label="t('settings.davUsername')" class="mt-4">
+          <UInput :model-value="dav?.username || ''" readonly />
+        </UFormField>
         <p class="text-sm mt-2 mb-4">
           {{ dav?.enabled ? t("settings.davEnabled") : t("settings.davDisabled") }}
         </p>
