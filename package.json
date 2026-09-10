@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "test": "node --import tsx --test server/storage/kv.test.ts",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "node scripts/cf-deploy.mjs"
   },
   "dependencies": {
     "@formkit/auto-animate": "^0.8.2",
