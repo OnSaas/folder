@@ -9,14 +9,14 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-const root = dirname(fileURLToPath(new URL("..", import.meta.url)));
+const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 function run(cmd, args, cwd = root) {
   const r = spawnSync(cmd, args, { cwd, stdio: "inherit", env: process.env });
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 
-run("npx", ["nuxi", "build"]);
+run("npm", ["run", "build"]);
 
 const nitroPath = join(root, "dist/server/chunks/nitro/nitro.mjs");
 let nitro = readFileSync(nitroPath, "utf8");
