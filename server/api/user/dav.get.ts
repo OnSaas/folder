@@ -6,9 +6,11 @@ export default defineEventHandler(async (event) => {
     throw createError({ status: 401, message: "Unauthorized" });
   }
   const record = await userRepository.get(user.id);
+  const password = record?.davPassword || "";
   return {
-    enabled: Boolean(record?.davPasswordHash && record?.davUsername),
+    enabled: Boolean(record?.davUsername && (password || record?.davPasswordHash)),
     path: "/dav",
     username: record?.davUsername || "",
+    password,
   };
 });

@@ -13,6 +13,7 @@ export type UserRecord = {
   provider?: string | null;
   locale?: LocaleCode | null;
   davUsername?: string | null;
+  davPassword?: string | null;
   davPasswordHash?: string | null;
   createdAt: number;
   updatedAt: number;

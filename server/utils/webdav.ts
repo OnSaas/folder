@@ -121,9 +121,15 @@ export async function resolveDavUser(username: string, password: string) {
   const byDav = await userRepository.getByDavUsername(username);
   const byEmail = byDav ? null : await userRepository.getByEmail(username);
   const user = byDav || byEmail;
-  if (!user || user.status !== "active" || !user.davPasswordHash) return null;
-  const hash = await sha256Hex(password);
-  if (!timingSafeEqual(hash, user.davPasswordHash)) return null;
+  if (!user || user.status !== "active") return null;
+  if (user.davPassword) {
+    if (!timingSafeEqual(password, user.davPassword)) return null;
+  } else if (user.davPasswordHash) {
+    const hash = await sha256Hex(password);
+    if (!timingSafeEqual(hash, user.davPasswordHash)) return null;
+  } else {
+    return null;
+  }
   const bucket = await bucketRepository.getByUser(user.id);
   if (!bucket) return null;
   return { user, bucket };

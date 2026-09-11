@@ -1,4 +1,3 @@
-import { sha256Hex } from "~~/server/utils/webdav";
 import { userRepository } from "~~/server/repositories/user";
 
 const USERNAME = /^[a-zA-Z0-9._-]{3,32}$/;
@@ -25,15 +24,10 @@ export default defineEventHandler(async (event) => {
   if (taken && taken.id !== user.id) {
     throw createError({ status: 409, message: "Username already taken" });
   }
-  let hash: string | undefined;
-  if (password) {
-    if (password.length < 8) {
-      throw createError({ status: 400, message: "Password must be at least 8 characters" });
-    }
-    hash = await sha256Hex(password);
-  } else if (!record.davPasswordHash) {
+  const hasPassword = Boolean(password || record.davPassword || record.davPasswordHash);
+  if (!hasPassword || (password && password.length < 8)) {
     throw createError({ status: 400, message: "Password must be at least 8 characters" });
   }
-  await userRepository.setDavCredentials(user.id, username, hash);
+  await userRepository.setDavCredentials(user.id, username, password || undefined);
   return { status: "success", username };
 });

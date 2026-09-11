@@ -32,6 +32,7 @@ export const userRepository = {
       provider: data.provider ?? null,
       locale: data.locale ?? null,
       davUsername: data.davUsername ?? null,
+      davPassword: data.davPassword ?? null,
       davPasswordHash: data.davPasswordHash ?? null,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt ?? now,
@@ -67,18 +68,15 @@ export const userRepository = {
   async setDavCredentials(
     id: string,
     username: string,
-    passwordHash?: string | null
+    password?: string | null
   ): Promise<UserRecord | null> {
     const user = await userRepository.get(id);
     if (!user) return null;
-    return userRepository.update(
-      {
-        ...user,
-        davUsername: username,
-        davPasswordHash: passwordHash === undefined ? user.davPasswordHash : passwordHash,
-      },
-      user
-    );
+    const next: UserRecord = { ...user, davUsername: username };
+    if (password) {
+      next.davPassword = password;
+    }
+    return userRepository.update(next, user);
   },
 
   async delete(id: string): Promise<void> {

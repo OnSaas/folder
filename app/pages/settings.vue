@@ -16,7 +16,9 @@ const { data: dav, refresh } = await useFetch("/api/user/dav");
 watch(
   dav,
   (value) => {
-    if (value?.username && !username.value) username.value = value.username;
+    if (!value) return;
+    username.value = value.username || "";
+    password.value = value.password || "";
   },
   { immediate: true }
 );
@@ -28,11 +30,7 @@ const saveDav = async () => {
     error.value = t("settings.davUsernameRequired");
     return;
   }
-  if (!dav.value?.enabled && password.value.length < 8) {
-    error.value = t("settings.davPasswordShort");
-    return;
-  }
-  if (password.value && password.value.length < 8) {
+  if (password.value.length < 8) {
     error.value = t("settings.davPasswordShort");
     return;
   }
@@ -42,7 +40,6 @@ const saveDav = async () => {
       method: "POST",
       body: { username: username.value, password: password.value },
     });
-    password.value = "";
     saved.value = true;
     await refresh();
   } catch (e: any) {
@@ -68,18 +65,10 @@ const saveDav = async () => {
           <UInput :model-value="davUrl" readonly />
         </UFormField>
         <UFormField :label="t('settings.davUsername')" class="mt-4">
-          <UInput v-model="username" autocomplete="username" />
+          <UInput v-model="username" autocomplete="off" />
         </UFormField>
-        <p class="text-sm mt-2 mb-4">
-          {{ dav?.enabled ? t("settings.davEnabled") : t("settings.davDisabled") }}
-        </p>
-        <UFormField :label="t('settings.davPassword')" :error="error">
-          <UInput
-            v-model="password"
-            type="password"
-            autocomplete="new-password"
-            :placeholder="dav?.enabled ? t('settings.davPasswordKeep') : ''"
-          />
+        <UFormField :label="t('settings.davPassword')" class="mt-4" :error="error">
+          <UInput v-model="password" type="text" autocomplete="off" />
         </UFormField>
         <UButton class="mt-4" color="primary" variant="solid" :loading="saving" @click="saveDav">
           {{ t("settings.saveDav") }}
