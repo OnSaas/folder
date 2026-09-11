@@ -1,6 +1,12 @@
 <script setup lang="ts">
 const { clear, user } = useUserSession();
 const { t } = useI18n();
+const route = useRoute();
+const { bucket } = useBucket();
+const settingsTo = () => {
+  const name = (route.params.bucket as string) || bucket.value?.name;
+  return name ? `/${name}/settings` : "/settings";
+};
 const signOut = () => {
   clear();
   navigateTo("/auth/signin");
@@ -19,7 +25,7 @@ const items = computed(() => [
     {
       label: t("navigation.settings"),
       icon: "i-lucide-settings",
-      onSelect: () => navigateTo("/settings"),
+      onSelect: () => navigateTo(settingsTo()),
     },
     {
       label: t("auth.logout"),

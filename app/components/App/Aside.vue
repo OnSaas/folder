@@ -42,7 +42,7 @@ const items = computed(() => [
     {
       label: t("navigation.settings"),
       icon: "lucide:settings",
-      to: "/settings",
+      to: `/${route.params.bucket}/settings`,
     },
   ],
 ]);
