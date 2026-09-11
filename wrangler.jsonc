@@ -23,5 +23,11 @@
   "assets": {
     "binding": "ASSETS",
     "directory": "./dist/public"
-  }
+  },
+  "routes": [
+    {
+      "pattern": "box.oonn.me",
+      "custom_domain": true
+    }
+  ]
 }

@@ -44,6 +44,7 @@ const out = {
   observability: src.observability || { enabled: true },
   kv_namespaces: src.kv_namespaces,
   r2_buckets: src.r2_buckets,
+  routes: src.routes,
   assets: { binding: "ASSETS", directory: "../public" },
 };
 writeFileSync(wranglerDst, JSON.stringify(out, null, 2) + "\n");
