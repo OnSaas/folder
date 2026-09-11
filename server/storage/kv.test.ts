@@ -115,4 +115,12 @@ describe("kv repositories", () => {
     assert.equal(listed[0]?.id, share.id);
     assert.equal((await getJson<string>(keys.userEmail("ada@example.com"))), "u1");
   });
+
+  it("indexes custom dav username", async () => {
+    await userRepository.setDavCredentials("u1", "ada.dav", "hash1");
+    assert.equal((await userRepository.getByDavUsername("ADA.DAV"))?.id, "u1");
+    await userRepository.setDavCredentials("u1", "ada2", "hash2");
+    assert.equal(await userRepository.getByDavUsername("ada.dav"), null);
+    assert.equal((await userRepository.getByDavUsername("ada2"))?.id, "u1");
+  });
 });

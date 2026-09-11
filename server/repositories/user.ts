@@ -13,6 +13,12 @@ export const userRepository = {
     return userRepository.get(id);
   },
 
+  async getByDavUsername(username: string): Promise<UserRecord | null> {
+    const id = await getJson<string>(keys.davUser(username));
+    if (!id) return null;
+    return userRepository.get(id);
+  },
+
   async create(data: Omit<UserRecord, "schemaVersion" | "updatedAt"> & { updatedAt?: number }): Promise<UserRecord> {
     const now = Date.now();
     const record: UserRecord = {
@@ -25,32 +31,54 @@ export const userRepository = {
       status: data.status,
       provider: data.provider ?? null,
       locale: data.locale ?? null,
+      davUsername: data.davUsername ?? null,
       davPasswordHash: data.davPasswordHash ?? null,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt ?? now,
     };
     await setJson(keys.user(record.id), record);
     await setJson(keys.userEmail(record.email), record.id);
+    if (record.davUsername) {
+      await setJson(keys.davUser(record.davUsername), record.id);
+    }
     return record;
   },
 
-  async update(record: UserRecord): Promise<UserRecord> {
+  async update(record: UserRecord, previous?: UserRecord | null): Promise<UserRecord> {
+    const before = previous ?? (await userRepository.get(record.id));
     const next = { ...record, schemaVersion: SCHEMA_VERSION, updatedAt: Date.now() };
     await setJson(keys.user(next.id), next);
     await setJson(keys.userEmail(next.email), next.id);
+    if (before?.davUsername && before.davUsername !== next.davUsername) {
+      await delKey(keys.davUser(before.davUsername));
+    }
+    if (next.davUsername) {
+      await setJson(keys.davUser(next.davUsername), next.id);
+    }
     return next;
   },
 
   async setLocale(id: string, locale: LocaleCode): Promise<UserRecord | null> {
     const user = await userRepository.get(id);
     if (!user) return null;
-    return userRepository.update({ ...user, locale });
+    return userRepository.update({ ...user, locale }, user);
   },
 
-  async setDavPasswordHash(id: string, hash: string | null): Promise<UserRecord | null> {
+  async setDavCredentials(
+    id: string,
+    username: string,
+    passwordHash?: string | null
+  ): Promise<UserRecord | null> {
     const user = await userRepository.get(id);
     if (!user) return null;
-    return userRepository.update({ ...user, davPasswordHash: hash });
+    return userRepository.update(
+      {
+        ...user,
+        davUsername: username,
+        davPasswordHash: passwordHash === undefined ? user.davPasswordHash : passwordHash,
+      },
+      user
+    );
   },
 
   async delete(id: string): Promise<void> {
@@ -58,5 +86,6 @@ export const userRepository = {
     if (!user) return;
     await delKey(keys.user(id));
     await delKey(keys.userEmail(user.email));
+    if (user.davUsername) await delKey(keys.davUser(user.davUsername));
   },
 };

@@ -118,9 +118,9 @@ ${etag}
 }
 
 export async function resolveDavUser(username: string, password: string) {
-  const byEmail = await userRepository.getByEmail(username);
-  const byBucket = byEmail ? null : await bucketRepository.getByName(username);
-  const user = byEmail || (byBucket ? await userRepository.get(byBucket.userId) : null);
+  const byDav = await userRepository.getByDavUsername(username);
+  const byEmail = byDav ? null : await userRepository.getByEmail(username);
+  const user = byDav || byEmail;
   if (!user || user.status !== "active" || !user.davPasswordHash) return null;
   const hash = await sha256Hex(password);
   if (!timingSafeEqual(hash, user.davPasswordHash)) return null;

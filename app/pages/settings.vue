@@ -3,6 +3,7 @@ const { t } = useI18n();
 definePageMeta({ middleware: "auth" });
 useSeoMeta({ title: "Settings" });
 
+const username = ref("");
 const password = ref("");
 const saving = ref(false);
 const saved = ref(false);
@@ -12,11 +13,26 @@ const davUrl = computed(() => {
   return `${window.location.origin}/dav`;
 });
 const { data: dav, refresh } = await useFetch("/api/user/dav");
+watch(
+  dav,
+  (value) => {
+    if (value?.username && !username.value) username.value = value.username;
+  },
+  { immediate: true }
+);
 
 const saveDav = async () => {
   error.value = "";
   saved.value = false;
-  if (password.value.length < 8) {
+  if (!username.value.trim()) {
+    error.value = t("settings.davUsernameRequired");
+    return;
+  }
+  if (!dav.value?.enabled && password.value.length < 8) {
+    error.value = t("settings.davPasswordShort");
+    return;
+  }
+  if (password.value && password.value.length < 8) {
     error.value = t("settings.davPasswordShort");
     return;
   }
@@ -24,7 +40,7 @@ const saveDav = async () => {
   try {
     await $fetch("/api/user/dav-password", {
       method: "POST",
-      body: { password: password.value },
+      body: { username: username.value, password: password.value },
     });
     password.value = "";
     saved.value = true;
@@ -52,13 +68,18 @@ const saveDav = async () => {
           <UInput :model-value="davUrl" readonly />
         </UFormField>
         <UFormField :label="t('settings.davUsername')" class="mt-4">
-          <UInput :model-value="dav?.username || ''" readonly />
+          <UInput v-model="username" autocomplete="username" />
         </UFormField>
         <p class="text-sm mt-2 mb-4">
           {{ dav?.enabled ? t("settings.davEnabled") : t("settings.davDisabled") }}
         </p>
         <UFormField :label="t('settings.davPassword')" :error="error">
-          <UInput v-model="password" type="password" autocomplete="new-password" />
+          <UInput
+            v-model="password"
+            type="password"
+            autocomplete="new-password"
+            :placeholder="dav?.enabled ? t('settings.davPasswordKeep') : ''"
+          />
         </UFormField>
         <UButton class="mt-4" color="primary" variant="solid" :loading="saving" @click="saveDav">
           {{ t("settings.saveDav") }}

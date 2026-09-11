@@ -7,8 +7,8 @@ export default defineEventHandler(async (event) => {
   }
   const record = await userRepository.get(user.id);
   return {
-    enabled: Boolean(record?.davPasswordHash),
+    enabled: Boolean(record?.davPasswordHash && record?.davUsername),
     path: "/dav",
-    username: record?.email || user.email || "",
+    username: record?.davUsername || "",
   };
 });
