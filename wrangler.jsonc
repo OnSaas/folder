@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "folder",
+  "account_id": "22788d96116325ff531105e98c23bc95",
   "main": "./dist/server/index.mjs",
   "compatibility_date": "2025-03-10",
   "compatibility_flags": ["nodejs_compat"],
@@ -10,7 +11,7 @@
   "kv_namespaces": [
     {
       "binding": "KV",
-      "id": "99e0085d43c24b1d94304e2dea0fac49"
+      "id": "993704e372784dffb47e53192c1f850e"
     }
   ],
   "r2_buckets": [

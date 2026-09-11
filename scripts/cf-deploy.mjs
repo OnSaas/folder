@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * OnWarp Worker deploy for Folder (Nuxt cloudflare_module).
+ * EdgeNux Worker deploy for OnSaas/folder (Nuxt cloudflare_module).
  * Nitro 2.11 emits `_EventEmitter` after `_Readable extends _EventEmitter`.
  * Patch to `node:events` then wrangler --no-bundle from dist/server.
  */
@@ -33,6 +33,7 @@ const src = JSON.parse(
 );
 const out = {
   name: src.name,
+  account_id: src.account_id,
   main: "index.mjs",
   compatibility_date: src.compatibility_date,
   compatibility_flags: src.compatibility_flags || ["nodejs_compat"],
@@ -47,4 +48,5 @@ const out = {
 };
 writeFileSync(wranglerDst, JSON.stringify(out, null, 2) + "\n");
 
-run("npx", ["wrangler", "deploy"], join(root, "dist/server"));
+if (src.account_id) process.env.CLOUDFLARE_ACCOUNT_ID = src.account_id;
+run("npx", ["wrangler", "deploy", "--keep-vars"], join(root, "dist/server"));
