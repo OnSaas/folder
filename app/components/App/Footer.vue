@@ -26,7 +26,7 @@ watch(deleting, (value) => {
     >
       <div class="w-full sm:w-auto flex items-center gap-4">
         <label class="font-medium px-4 text-sm">{{
-          selected.length + " selected"
+          $t("common.selected", { count: selected.length })
         }}</label>
         <UButton
           trailingIcon="lucide:x"
@@ -36,26 +36,26 @@ watch(deleting, (value) => {
       </div>
       <UButton
         icon="lucide:users"
-        label="Share"
+        :label="$t('file.share')"
         @click="openShare(selectedFiles)"
       />
       <UButton
         v-if="selected.length === 1"
         icon="lucide:folder-input"
-        label="Move to"
+        :label="$t('file.moveTo')"
         @click="openMove(selectedFiles[0])"
       />
       <UButton
         v-if="selected.length === 1"
         icon="lucide:download"
-        label="Download"
+        :label="$t('file.download')"
         :to="downloadFile(route.params.bucket as string, selected[0] as string)"
         target="_blank"
       />
       <UButton
         :loading="deleting"
         icon="lucide:trash"
-        label="Delete"
+        :label="$t('common.delete')"
         @click="deleteFiles(selected)"
       />
       <UButton

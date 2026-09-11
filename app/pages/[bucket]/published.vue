@@ -1,7 +1,8 @@
 <script setup lang="ts">
+const { t } = useI18n();
 const route = useRoute();
 const bucket = route.params.bucket;
 </script>
 <template>
-  <AppFiles v-if="bucket" title="Published" endpoint="published" />
+  <AppFiles v-if="bucket" :title="t('pages.published')" endpoint="published" />
 </template>

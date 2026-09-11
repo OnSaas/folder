@@ -20,7 +20,7 @@ watch(
 </script>
 <template>
   <UButtonGroup>
-    <UTooltip text="Change Order" arrow :delay-duration="0">
+    <UTooltip :text="$t('sort.changeOrder')" arrow :delay-duration="0">
       <UButton
         :icon="
           sort.order === 'asc'

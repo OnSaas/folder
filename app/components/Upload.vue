@@ -129,7 +129,7 @@ const overallProgress = computed(() => {
       <UButton
         color="primary"
         variant="solid"
-        :label="type === 'folder' ? 'Upload Folder' : 'Upload Files'"
+        :label="type === 'folder' ? $t('upload.folder') : $t('upload.files')"
         @click="$refs.fileInput.click()"
       />
       <input

@@ -1,11 +1,8 @@
 <script setup lang="ts">
+const { t } = useI18n();
 const route = useRoute();
 const bucket = route.params.bucket;
 </script>
 <template>
-  <AppFiles
-    v-if="bucket"
-    title="Recently Added or Modified"
-    endpoint="recent"
-  />
+  <AppFiles v-if="bucket" :title="t('pages.recent')" endpoint="recent" />
 </template>

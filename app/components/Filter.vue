@@ -49,7 +49,10 @@ const hasFilters = computed(() => {
         <USelect
           :placeholder="$t('filter.visibility')"
           v-model="filters.visibility"
-          :items="['public', 'private']"
+          :items="[
+            { value: 'public', label: t('filter.public') },
+            { value: 'private', label: t('filter.private') },
+          ]"
           variant="outline"
         />
         <USelect

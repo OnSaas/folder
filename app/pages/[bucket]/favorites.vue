@@ -1,7 +1,8 @@
 <script setup lang="ts">
+const { t } = useI18n();
 const route = useRoute();
 const bucket = route.params.bucket;
 </script>
 <template>
-  <AppFiles v-if="bucket" title="Favorites" endpoint="favorites" />
+  <AppFiles v-if="bucket" :title="t('pages.favorites')" endpoint="favorites" />
 </template>

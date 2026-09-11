@@ -13,7 +13,8 @@
     "error": "错误",
     "success": "成功",
     "loading": "加载中",
-    "note": "注意"
+    "note": "注意",
+    "selected": "已选 {count} 项"
   },
   "navigation": {
     "home": "首页",
@@ -22,6 +23,13 @@
     "recent": "最近",
     "favorites": "收藏",
     "sharedWithMe": "与我共享",
+    "published": "已发布",
+    "trash": "回收站"
+  },
+  "pages": {
+    "recent": "最近添加或修改",
+    "favorites": "收藏",
+    "shared": "与我共享",
     "published": "已发布",
     "trash": "回收站"
   },
@@ -107,7 +115,8 @@
   "sort": {
     "name": "名称",
     "created": "创建时间",
-    "modified": "修改时间"
+    "modified": "修改时间",
+    "changeOrder": "切换排序"
   },
   "filter": {
     "entireDrive": "整个云盘",
@@ -117,7 +126,8 @@
     "shared": "已分享",
     "notShared": "未分享",
     "public": "公开",
-    "private": "私有"
+    "private": "私有",
+    "inherit": "继承"
   },
   "share": {
     "title": "分享 {count} 项",
@@ -141,12 +151,19 @@
     "action": "创建副本"
   },
   "publish": {
+    "title": "发布 '{name}'",
+    "description": "发布后可通过公开链接访问。",
+    "visibility": "可见性",
+    "domain": "域名",
+    "domainPlaceholder": "输入域名",
     "confirm": "确认",
     "websiteHint": "如果要发布为网站，请设置域名。"
   },
   "upload": {
     "drop": "把文件拖到这里",
-    "progress": "总体进度"
+    "progress": "总体进度",
+    "files": "上传文件",
+    "folder": "上传文件夹"
   },
   "create": {
     "title": "新建 {type}",

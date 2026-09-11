@@ -13,7 +13,8 @@
     "error": "Error",
     "success": "Success",
     "loading": "Loading",
-    "note": "Note"
+    "note": "Note",
+    "selected": "{count} selected"
   },
   "navigation": {
     "home": "Home",
@@ -22,6 +23,13 @@
     "recent": "Recent",
     "favorites": "Favorites",
     "sharedWithMe": "Shared With Me",
+    "published": "Published",
+    "trash": "Trash"
+  },
+  "pages": {
+    "recent": "Recently Added or Modified",
+    "favorites": "Favorites",
+    "shared": "Shared With Me",
     "published": "Published",
     "trash": "Trash"
   },
@@ -107,7 +115,8 @@
   "sort": {
     "name": "Name",
     "created": "Created",
-    "modified": "Modified"
+    "modified": "Modified",
+    "changeOrder": "Change Order"
   },
   "filter": {
     "entireDrive": "Entire Drive",
@@ -117,7 +126,8 @@
     "shared": "Shared",
     "notShared": "Not Shared",
     "public": "public",
-    "private": "private"
+    "private": "private",
+    "inherit": "inherit"
   },
   "share": {
     "title": "Share {count} items",
@@ -141,12 +151,19 @@
     "action": "Make Copy"
   },
   "publish": {
+    "title": "Publish '{name}'",
+    "description": "Published item will be available to everyone via a public link.",
+    "visibility": "Visibility",
+    "domain": "Domain",
+    "domainPlaceholder": "Enter Domain",
     "confirm": "Confirm",
     "websiteHint": "If you want to publish as a website, set a domain for it."
   },
   "upload": {
     "drop": "Drop files here",
-    "progress": "Overall Progress"
+    "progress": "Overall Progress",
+    "files": "Upload Files",
+    "folder": "Upload Folder"
   },
   "create": {
     "title": "Create {type}",

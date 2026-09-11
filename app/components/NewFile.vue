@@ -78,8 +78,8 @@ const onSubmit = async () => {
 <template>
   <UModal
     v-model:open="open"
-    :title="$t('create.title', { type: form.type })"
-    :description="$t('create.description', { type: form.type })"
+    :title="form.type === 'folder' ? $t('folder.newFolder') : $t('file.newFile')"
+    :description="$t('create.description', { type: form.type === 'folder' ? $t('folder.newFolder') : $t('file.newFile') })"
   >
     <template #body>
       <div class="flex flex-col gap-4">

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const { t } = useI18n();
 const props = defineProps<{
   file: IFile;
   publishing: boolean;
@@ -6,6 +7,12 @@ const props = defineProps<{
 const emit = defineEmits(["update"]);
 const domain = ref<string>();
 const visibility = ref<string>(props.file.visibility);
+const visibilityItems = computed(() =>
+  visibilityOptions.map((item) => ({
+    ...item,
+    label: t("filter." + item.value),
+  }))
+);
 const onConfirm = () => {
   emit("update", { visibility: visibility.value, domain: domain.value });
 };
@@ -13,19 +20,17 @@ const onConfirm = () => {
 <template>
   <UModal
     v-if="file"
-    :title="`Publish '${file.name}'`"
-    :description="`Published item will be available to everyone via a public link.`"
+    :title="$t('publish.title', { name: file.name })"
+    :description="$t('publish.description')"
   >
     <template #body>
       <div class="flex flex-col gap-4">
         <div class="flex flex-row items-center justify-between gap-4">
-          <label class="text-sm font-light min-w-24">Visibility</label>
+          <label class="text-sm font-light min-w-24">{{ $t("publish.visibility") }}</label>
           <USelect
-            :icon="
-              visibilityOptions.find((item) => item.value === visibility)?.icon
-            "
+            :icon="visibilityOptions.find((item) => item.value === visibility)?.icon"
             v-model="visibility"
-            :items="visibilityOptions"
+            :items="visibilityItems"
             variant="outline"
             class="w-full"
           />
@@ -35,11 +40,11 @@ const onConfirm = () => {
             {{ $t("publish.websiteHint") }}
           </div>
           <div class="flex flex-row items-center justify-between gap-4">
-            <label class="text-sm font-light min-w-24">Domain</label>
+            <label class="text-sm font-light min-w-24">{{ $t("publish.domain") }}</label>
             <UInput
               v-model="domain"
               type="url"
-              placeholder="Enter Domain"
+              :placeholder="$t('publish.domainPlaceholder')"
               required
               class="w-full"
             />
