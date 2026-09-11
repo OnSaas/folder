@@ -10,6 +10,7 @@ export default defineEventHandler(async (event) => {
   return {
     enabled: Boolean(record?.davUsername && (password || record?.davPasswordHash)),
     path: "/dav",
+    paths: ["/dav", "/webdav"],
     username: record?.davUsername || "",
     password,
   };

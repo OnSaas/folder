@@ -10,6 +10,8 @@ export default defineNuxtConfig({
     "/public/**": { cors: true, ssr: true },
     "/dav": { ssr: true },
     "/dav/**": { ssr: true },
+    "/webdav": { ssr: true },
+    "/webdav/**": { ssr: true },
   },
   modules: [
     "@nuxt/ui",

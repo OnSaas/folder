@@ -12,6 +12,10 @@ const davUrl = computed(() => {
   if (!import.meta.client) return "/dav";
   return `${window.location.origin}/dav`;
 });
+const webdavUrl = computed(() => {
+  if (!import.meta.client) return "/webdav";
+  return `${window.location.origin}/webdav`;
+});
 const { data: dav, refresh } = await useFetch("/api/user/dav");
 watch(
   dav,
@@ -60,6 +64,9 @@ const saveDav = async () => {
         <p class="text-sm opacity-70">{{ t("settings.davHint") }}</p>
         <UFormField :label="t('settings.davUrl')">
           <UInput :model-value="davUrl" readonly class="w-full" />
+        </UFormField>
+        <UFormField :label="t('settings.webdavUrl')">
+          <UInput :model-value="webdavUrl" readonly class="w-full" />
         </UFormField>
         <UFormField :label="t('settings.davUsername')">
           <UInput v-model="username" autocomplete="off" class="w-full" />

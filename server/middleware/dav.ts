@@ -1,7 +1,7 @@
-import { handleDav } from "../utils/webdav";
+import { handleDav, isDavPath } from "../utils/webdav";
 
 export default defineEventHandler(async (event) => {
   const path = getRequestURL(event).pathname;
-  if (path !== "/dav" && !path.startsWith("/dav/")) return;
+  if (!isDavPath(path)) return;
   return handleDav(event);
 });

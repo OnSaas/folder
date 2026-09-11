@@ -15,6 +15,21 @@ import type { FileRecord } from "../storage/types";
 export const DAV_ALLOW =
   "OPTIONS, GET, HEAD, PUT, DELETE, MKCOL, COPY, MOVE, PROPFIND, PROPPATCH, LOCK, UNLOCK";
 
+export const DAV_MOUNTS = ["/webdav", "/dav"] as const;
+
+export function isDavPath(pathname: string) {
+  const path = pathname || "/";
+  return DAV_MOUNTS.some((mount) => path === mount || path.startsWith(`${mount}/`));
+}
+
+export function davMount(pathname: string) {
+  const path = decodeURIComponent(pathname || "/");
+  for (const mount of DAV_MOUNTS) {
+    if (path === mount || path.startsWith(`${mount}/`)) return mount;
+  }
+  return "/dav";
+}
+
 export function xmlEscape(value: string) {
   return value
     .replace(/&/g, "&amp;")
@@ -48,16 +63,21 @@ export function timingSafeEqual(a: string, b: string) {
   return out === 0;
 }
 
-export function davRelPath(pathname: string) {
+export function davRelPath(pathname: string, mount?: string) {
   let path = decodeURIComponent(pathname || "/");
-  if (path.startsWith("/dav")) path = path.slice(4);
+  const prefix = mount || davMount(path);
+  if (path === prefix || path.startsWith(`${prefix}/`)) {
+    path = path.slice(prefix.length);
+  }
   path = path.replace(/^\/+|\/+$/g, "");
   return path;
 }
 
-export function hrefFor(rel: string) {
+export function hrefFor(rel: string, mount = "/dav") {
   const clean = rel.replace(/^\/+|\/+$/g, "");
-  return clean ? `/dav/${clean.split("/").map(encodeURIComponent).join("/")}` : "/dav/";
+  return clean
+    ? `${mount}/${clean.split("/").map(encodeURIComponent).join("/")}`
+    : `${mount}/`;
 }
 
 function rfc1123(ms: number) {
@@ -135,19 +155,19 @@ export async function resolveDavUser(username: string, password: string) {
   return { user, bucket };
 }
 
-function fileHref(file: FileRecord, bucketName: string) {
+function fileHref(file: FileRecord, bucketName: string, mount: string) {
   const rel = file.path.startsWith(bucketName + "/")
     ? file.path.slice(bucketName.length + 1)
     : file.path === bucketName
       ? ""
       : file.path;
-  const href = hrefFor(rel);
+  const href = hrefFor(rel, mount);
   return file.type === "folder" && !href.endsWith("/") ? `${href}/` : href;
 }
 
-function toPropItem(file: FileRecord, bucketName: string) {
+function toPropItem(file: FileRecord, bucketName: string, mount: string) {
   return {
-    href: fileHref(file, bucketName),
+    href: fileHref(file, bucketName, mount),
     isCollection: file.type === "folder",
     displayName: file.name,
     contentType: file.contentType,
@@ -219,7 +239,8 @@ async function copyNode(
 export async function handleDav(event: any) {
   const method = getMethod(event).toUpperCase();
   const url = getRequestURL(event);
-  const rel = davRelPath(url.pathname);
+  const mount = davMount(url.pathname);
+  const rel = davRelPath(url.pathname, mount);
 
   setResponseHeader(event, "DAV", "1, 2");
   setResponseHeader(event, "Allow", DAV_ALLOW);
@@ -252,7 +273,7 @@ export async function handleDav(event: any) {
     const items = [];
     if (node.kind === "root") {
       items.push({
-        href: "/dav/",
+        href: `${mount}/`,
         isCollection: true,
         displayName: bucket.name,
         createdAt: bucket.createdAt,
@@ -262,15 +283,15 @@ export async function handleDav(event: any) {
       if (depth !== "0") {
         const children = await fileRepository.listChildren(bucket.name, "root");
         for (const child of children.filter((c) => !c.deletedAt)) {
-          items.push(toPropItem(child, bucket.name));
+          items.push(toPropItem(child, bucket.name, mount));
         }
       }
     } else if (node.file) {
-      items.push(toPropItem(node.file, bucket.name));
+      items.push(toPropItem(node.file, bucket.name, mount));
       if (node.kind === "folder" && depth !== "0") {
         const children = await fileRepository.listChildren(bucket.name, node.file.id);
         for (const child of children.filter((c) => !c.deletedAt)) {
-          items.push(toPropItem(child, bucket.name));
+          items.push(toPropItem(child, bucket.name, mount));
         }
       }
     }
@@ -284,7 +305,7 @@ export async function handleDav(event: any) {
     setResponseHeader(event, "Content-Type", "application/xml; charset=utf-8");
     return `<?xml version="1.0" encoding="utf-8"?>
 <D:multistatus xmlns:D="DAV:">
-<D:response><D:href>${xmlEscape(hrefFor(rel))}</D:href>
+<D:response><D:href>${xmlEscape(hrefFor(rel, mount))}</D:href>
 <D:propstat><D:prop/><D:status>HTTP/1.1 200 OK</D:status></D:propstat>
 </D:response></D:multistatus>`;
   }
@@ -322,7 +343,7 @@ export async function handleDav(event: any) {
     if (parentRel && parent.kind === "missing") throw createError({ status: 409, message: "Conflict" });
     await ensurePath(bucket.name, fullPath, user.id);
     setResponseStatus(event, 201);
-    setResponseHeader(event, "Location", hrefFor(rel) + "/");
+    setResponseHeader(event, "Location", hrefFor(rel, mount) + "/");
     return "";
   }
 

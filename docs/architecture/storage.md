@@ -143,7 +143,7 @@ After V2: no D1 binding, no Drizzle.
 
 ## WebDAV
 
-Mount: `/dav` (Basic auth). Username = email or bucket name. Password hash `user.davPasswordHash` (SHA-256), set in Settings.
+Mount: `/dav` and `/webdav` (same protocol, Basic auth). Username = custom DAV username, else email. Password is plaintext `user.davPassword` (legacy SHA-256 `user.davPasswordHash`), set in Settings.
 
 OPTIONS unauthenticated (`DAV: 1, 2`). PROPFIND 207, GET/HEAD, PUT, MKCOL, DELETE, COPY/MOVE, LOCK/UNLOCK (dummy), PROPPATCH 207. Bytes stay on R2; metadata via FileRepository.
 

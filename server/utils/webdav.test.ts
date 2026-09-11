@@ -19,6 +19,15 @@ describe("webdav protocol helpers", () => {
     assert.equal(hrefFor("Projects/a.txt"), "/dav/Projects/a.txt");
   });
 
+  it("maps /webdav paths", () => {
+    assert.equal(davRelPath("/webdav"), "");
+    assert.equal(davRelPath("/webdav/"), "");
+    assert.equal(davRelPath("/webdav/Projects/a.txt"), "Projects/a.txt");
+    assert.equal(hrefFor("", "/webdav"), "/webdav/");
+    assert.equal(hrefFor("Projects/a.txt", "/webdav"), "/webdav/Projects/a.txt");
+    assert.equal(davRelPath("/webdav"), davRelPath("/dav"));
+  });
+
   it("parses basic auth", () => {
     const header = "Basic " + Buffer.from("ada@example.com:secret").toString("base64");
     const creds = parseBasicAuth(header);
