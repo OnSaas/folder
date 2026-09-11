@@ -89,7 +89,7 @@
     "placeholder": "Enter bucket name",
     "hint": "Choose a unique bucket name. It can't be changed later.",
     "required": "Bucket name is required",
-    "tooShort": "Bucket name must be at least 6 characters",
+    "tooShort": "Bucket name must be at least 1 character",
     "invalid": "Bucket name must start with a letter and can only contain lowercase letters, numbers, and hyphens",
     "exists": "Bucket already exists"
   },

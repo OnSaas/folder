@@ -10,9 +10,9 @@ export default defineEventHandler(async (event) => {
       status: 400,
     });
   }
-  if (name.length < 6 || name.length > 20) {
+  if (name.length < 1 || name.length > 20) {
     throw createError({
-      message: "Bucket name should be between 6 to 20 characters",
+      message: "Bucket name should be between 1 to 20 characters",
       status: 400,
     });
   }

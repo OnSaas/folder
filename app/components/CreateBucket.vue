@@ -10,11 +10,11 @@ const createBucket = async () => {
     error.value = t("bucket.required");
     return;
   }
-  if (bucketName.value.length < 6) {
+  if (bucketName.value.length < 1) {
     error.value = t("bucket.tooShort");
     return;
   }
-  if (!/^[a-z][a-z0-9-]*[a-z0-9]$/.test(bucketName.value)) {
+  if (!/^[a-z](?:[a-z0-9-]*[a-z0-9])?$/.test(bucketName.value)) {
     error.value = t("bucket.invalid");
     return;
   }
