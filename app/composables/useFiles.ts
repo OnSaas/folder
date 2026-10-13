@@ -31,7 +31,6 @@ export const useFiles = (endpoint: any = "root") => {
         route.params.id || "root"
       }`,
       favorites: `/api/files/${route.params.bucket}/favorites`,
-      shared: `/api/files/${route.params.bucket}/shared`,
       published: `/api/files/${route.params.bucket}/published`,
       recent: `/api/files/${route.params.bucket}/recent`,
       trash: `/api/files/${route.params.bucket}/trash`,

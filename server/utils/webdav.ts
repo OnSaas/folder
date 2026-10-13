@@ -9,8 +9,15 @@ import {
   renameFile,
 } from "./db";
 import { copyBlob } from "./blob";
-import { getContentType, cleanPath } from "~~/shared/utils/helper";
+import { getContentType, cleanPath } from "../../shared/utils/helper";
 import type { FileRecord } from "../storage/types";
+import { tError } from "./i18n";
+import {
+  assertNotRateLimited,
+  clearAuthFailures,
+  clientIp,
+  recordAuthFailure,
+} from "./rate-limit";
 
 export const DAV_ALLOW =
   "OPTIONS, GET, HEAD, PUT, DELETE, MKCOL, COPY, MOVE, PROPFIND, PROPPATCH, LOCK, UNLOCK";
@@ -138,10 +145,8 @@ ${etag}
 }
 
 export async function resolveDavUser(username: string, password: string) {
-  const byDav = await userRepository.getByDavUsername(username);
-  const byEmail = byDav ? null : await userRepository.getByEmail(username);
-  const user = byDav || byEmail;
-  if (!user || user.status !== "active") return null;
+  const user = await userRepository.getByDavUsername(username);
+  if (!user || (user.status && user.status !== "active")) return null;
   if (user.davPassword) {
     if (!timingSafeEqual(password, user.davPassword)) return null;
   } else if (user.davPasswordHash) {
@@ -255,13 +260,23 @@ export async function handleDav(event: any) {
   const creds = parseBasicAuth(getHeader(event, "authorization"));
   if (!creds) {
     setResponseHeader(event, "WWW-Authenticate", 'Basic realm="Folder DAV"');
-    throw createError({ status: 401, message: "Unauthorized" });
+    throw createError({ status: 401, message: tError(event, "errors.unauthorized") });
+  }
+  const ip = clientIp(event);
+  const limited = await assertNotRateLimited(ip);
+  if (limited.limited) {
+    throw createError({ status: 429, message: tError(event, "errors.tooManyAttempts") });
   }
   const session = await resolveDavUser(creds.user, creds.pass);
   if (!session) {
+    const next = await recordAuthFailure(ip);
     setResponseHeader(event, "WWW-Authenticate", 'Basic realm="Folder DAV"');
-    throw createError({ status: 401, message: "Unauthorized" });
+    if (next.limited) {
+      throw createError({ status: 429, message: tError(event, "errors.tooManyAttempts") });
+    }
+    throw createError({ status: 401, message: tError(event, "errors.unauthorized") });
   }
+  await clearAuthFailures(ip);
 
   const { user, bucket } = session;
   const node = await resolveNode(bucket.name, rel);

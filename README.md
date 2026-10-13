@@ -1,92 +1,63 @@
-> [!Note] 
-> Folder is no longer actively maintained and is not recommended for production use. Use it at your own risk.
+> [!Note]
+> This project is no longer actively maintained. Use it at your own risk.
 
 # Folder
 
-An open-source, serverless **Digital Asset Management (DAM)** software that helps you **store, organize, and share** files and folders. With **Folder**, you can securely share files, manage permissions, and even publish folders as a static website.
+Single-user, self-hosted file manager on Cloudflare Workers. Store files in R2, metadata in KV, sign in with a password. Public folders can be served as a static site. WebDAV is available at `/dav` and `/webdav`.
 
-![Folder Preview](https://assets.bansal.io/folder-preview/0.0.png)
-![Folder Preview](https://assets.bansal.io/folder-preview/6.0.png)
-![Folder Preview](https://assets.bansal.io/folder-preview/1.0.png)
+## Stack
 
-## Why Folder?
+- Frontend: Nuxt, Nuxt UI
+- Backend: Nitro on Cloudflare Workers
+- Metadata: Cloudflare KV
+- Blobs: Cloudflare R2
+- Auth: password (PBKDF2 hash in a Worker secret) + encrypted session cookie
 
-- **Alternative to Google Drive**: Store files, manage assets, and serve them via CDN.
-- **Built for AI & Modern Workflows**: Direct file access for AI training or querying.
-- **Developer-Friendly**: Deploy on Cloudflare with **serverless architecture**.
+## Deploy
 
-## Tech Stack
+1. Create a KV namespace and an R2 bucket.
+2. Copy `wrangler.example.jsonc` to `wrangler.jsonc` and fill in `account_id`, KV id, and R2 bucket name.
+3. Install and hash a password:
 
-- **Frontend**: Nuxt, TailwindCSS, Nuxt UI
-- **Backend**: Nitro
-- **Database**: Cloudflare KV (metadata)
-- **Storage**: Cloudflare R2
-- **Authentication**: OAuth (Google, GitHub)
-- **Server**: Cloudflare Workers
-- **Deployment**: Cloudflare Wrangler
+```sh
+git clone https://github.com/OnSaas/folder.git
+cd folder
+npm install
+npm run hash-password
+```
 
-## Features
+4. Put secrets (do not commit them):
 
-- Intuitive file and folder management
-- Files and Folder uploads
-- Secure file sharing with customizable permissions
-- Public/Private visibility settings
-- Public folder as website
-- File previews for common formats
-- Search functionality
-- Responsive design for mobile and desktop
-- Dark mode
-- Authentication with Google and Github
-- Custom domain support
-- Serverless architecture
+```sh
+npx wrangler secret put NUXT_ADMIN_PASSWORD_HASH
+npx wrangler secret put NUXT_SESSION_PASSWORD
+```
 
-## Prerequisites
+`NUXT_SESSION_PASSWORD` must be at least 32 characters. Optional: `NUXT_BUCKET_NAME` (default `files`).
 
-1. **Cloudflare Account** (for R2, KV and Hosting)
-2. **GitHub/Google Cloud Account** (for OAuth authentication)
-3. **Domain name** (optional, for custom domains)
+5. Deploy:
 
-## Deployment
+```sh
+npm run deploy
+```
 
-1. **Create Cloudflare resources**
-   - Set up **KV Namespace**
-   - Create an **R2 Bucket**
-2. **Set up OAuth**
-   - Create an OAuth App in **GitHub Developer Settings** (or Google Cloud Console)
-   - Obtain **Client ID & Secret**
-3. Clone the repository
+The deploy script keeps existing Worker vars (`--keep-vars`).
 
-   ```sh
-   git clone https://github.com/bansal/folder.git
-   cd folder
-   ```
+6. After the first login, check that existing files are still there, WebDAV still connects, and `POST /api/auth/logout` then `GET /api/bucket` returns 401.
 
-4. Install dependencies: `npm install`
-5. Configure Cloudflare credentials
-   - Rename `wrapper.example.toml` → `wrapper.toml`
-   - Update `wrapper.toml` the configuration with your **Cloudflare API key, R2 bucket name, and D1 DB name**
-6. Deploy to Cloudflare Workers: `npm run deploy`
+Forgot the password: generate a new hash and overwrite `NUXT_ADMIN_PASSWORD_HASH`. Old sessions become invalid.
 
-## Local Development
+## Local development
 
-1. Configure your environment variables in a `.env` file
-2. Install dependencies: `npm install`
-3. Start the development server: `npm run dev`
-4. Visit [http://localhost:3000](http://localhost:3000) in your browser
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add some amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+```sh
+cp .env.example .env
+npm install
+npm run dev
+```
 
 ## Disclaimer
 
-This project is no longer actively maintained. **Use at your own risk.** See [DISCLAIMER](DISCLAIMER.md) for details.
+Not maintained. **Use at your own risk.** See [DISCLAIMER](DISCLAIMER.md).
 
 ## License
 

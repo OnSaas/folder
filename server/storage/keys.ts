@@ -1,4 +1,5 @@
 export const keys = {
+  owner: () => `idx:owner`,
   user: (id: string) => `user:${id}`,
   userEmail: (email: string) => `idx:user:email:${email.toLowerCase()}`,
   davUser: (username: string) => `idx:dav:user:${username.toLowerCase()}`,

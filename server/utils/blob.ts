@@ -1,3 +1,5 @@
+import { tError } from "./i18n";
+
 export const moveBlob = async (source: string, target: string) => {
   try {
     const blob = await hubBlob().get(source);
@@ -6,10 +8,7 @@ export const moveBlob = async (source: string, target: string) => {
       await hubBlob().del(source);
     }
   } catch (err) {
-    throw createError({
-      status: 500,
-      message: "Can't move item",
-    });
+    failBlob("errors.cantMove");
   }
 };
 
@@ -20,10 +19,7 @@ export const copyBlob = async (source: string, target: string) => {
       return hubBlob().put(target, blob);
     }
   } catch (err) {
-    throw createError({
-      status: 500,
-      message: "Can't make copy",
-    });
+    failBlob("errors.cantCopy");
   }
 };
 
@@ -35,9 +31,13 @@ export const deleteBlob = async (path: string, timestamp: number) => {
       await hubBlob().del(path);
     }
   } catch (err) {
-    throw createError({
-      status: 500,
-      message: "Can't delete item",
-    });
+    failBlob("errors.cantDelete");
   }
 };
+
+function failBlob(key: string): never {
+  throw createError({
+    status: 500,
+    message: tError(useEvent(), key),
+  });
+}

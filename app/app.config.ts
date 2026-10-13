@@ -1,7 +1,4 @@
-import { authConfig } from "./auth.config";
-
 export default defineAppConfig({
-  auth: { ...authConfig },
   // https://ui3.nuxt.dev/getting-started/theme#design-system
   ui: {
     colors: {

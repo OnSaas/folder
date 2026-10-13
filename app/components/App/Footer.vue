@@ -3,7 +3,6 @@ const route = useRoute();
 const { files, refresh } = useFiles();
 const { selected, resetSelected } = useSelected();
 const { deleteFiles, deleting, downloadFile } = useFileActions();
-const { openShare } = useShare();
 const { openMove } = useMove();
 const selectedFiles = computed(() =>
   selected.value.map((id) => files.value.find((file) => file.id === id)!)
@@ -34,11 +33,6 @@ watch(deleting, (value) => {
           class="sm:hidden ml-auto"
         />
       </div>
-      <UButton
-        icon="lucide:users"
-        :label="$t('file.share')"
-        @click="openShare(selectedFiles)"
-      />
       <UButton
         v-if="selected.length === 1"
         icon="lucide:folder-input"

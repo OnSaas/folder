@@ -6,27 +6,23 @@ import { userRepository } from "../repositories/user";
 import { bucketRepository } from "../repositories/bucket";
 import { fileRepository } from "../repositories/file";
 import { favoriteRepository } from "../repositories/favorite";
-import { shareRepository } from "../repositories/share";
 import { keys } from "./keys";
-import { getJson, getList } from "./kv";
+import { getList } from "./kv";
 
 describe("kv repositories", () => {
   const kv = new MemoryKv();
   setKvOverride(kv);
 
-  it("stores user with locale and email index", async () => {
+  it("stores user without email index", async () => {
     const user = await userRepository.create({
       id: "u1",
       name: "Ada",
-      email: "ada@example.com",
       status: "active",
-      provider: "github",
       locale: "zh-CN",
       createdAt: Date.now(),
     });
     assert.equal(user.schemaVersion, 1);
-    const byEmail = await userRepository.getByEmail("ADA@example.com");
-    assert.equal(byEmail?.id, "u1");
+    assert.equal(await kv.get(keys.userEmail("ada@example.com")), null);
     const updated = await userRepository.setLocale("u1", "en");
     assert.equal(updated?.locale, "en");
   });
@@ -102,24 +98,15 @@ describe("kv repositories", () => {
     assert.equal(trash[0]?.id, "file1");
   });
 
-  it("favorites and shares", async () => {
+  it("favorites", async () => {
     await favoriteRepository.add("u1", "file1");
     assert.equal(await favoriteRepository.has("u1", "file1"), true);
-    const share = await shareRepository.create({
-      fileId: "file1",
-      userId: "u2",
-      role: "viewer",
-      createdAt: Date.now(),
-    });
-    const listed = await shareRepository.listByUser("u2");
-    assert.equal(listed[0]?.id, share.id);
-    assert.equal((await getJson<string>(keys.userEmail("ada@example.com"))), "u1");
   });
 
   it("indexes custom dav username", async () => {
-    await userRepository.setDavCredentials("u1", "ada.dav", "hash1");
+    await userRepository.setDavCredentials("u1", "ada.dav", "plain-pass");
     assert.equal((await userRepository.getByDavUsername("ADA.DAV"))?.id, "u1");
-    await userRepository.setDavCredentials("u1", "ada2", "hash2");
+    await userRepository.setDavCredentials("u1", "ada2", "plain-pass-2");
     assert.equal(await userRepository.getByDavUsername("ada.dav"), null);
     assert.equal((await userRepository.getByDavUsername("ada2"))?.id, "u1");
   });

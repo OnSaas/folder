@@ -6,10 +6,10 @@ export type UserRecord = {
   schemaVersion: typeof SCHEMA_VERSION;
   id: string;
   name: string;
-  email: string;
+  email?: string | null;
   avatar?: string | null;
   country?: string | null;
-  status: string;
+  status?: string | null;
   provider?: string | null;
   locale?: LocaleCode | null;
   davUsername?: string | null;
@@ -65,4 +65,5 @@ export type KvStore = {
   get<T = unknown>(key: string): Promise<T | null>;
   set(key: string, value: unknown): Promise<void>;
   del(key: string): Promise<void>;
+  keys?(prefix?: string): Promise<string[]>;
 };

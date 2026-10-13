@@ -22,14 +22,12 @@
     "settings": "Settings",
     "recent": "Recent",
     "favorites": "Favorites",
-    "sharedWithMe": "Shared With Me",
     "published": "Published",
     "trash": "Trash"
   },
   "pages": {
     "recent": "Recently Added or Modified",
     "favorites": "Favorites",
-    "shared": "Shared With Me",
     "published": "Published",
     "trash": "Trash"
   },
@@ -44,22 +42,10 @@
   },
   "auth": {
     "signIn": "Sign In",
-    "signInOrUp": "Sign In / Sign Up",
-    "signInHint": "If you don’t have an account, one will be created.",
-    "welcomeDemo": "Welcome to the demo version of the app.",
-    "pleaseSignUp": "Please sign up to continue.",
-    "continueGithub": "Continue with GitHub",
-    "continueGoogle": "Continue with Google",
+    "password": "Password",
+    "passwordPlaceholder": "Enter password",
     "logout": "Logout",
-    "sessionExpired": "Session expired",
-    "unauthorized": "Unauthorized",
-    "providerNotAllowed": "Provider not allowed",
-    "emailRequired": "Account must have an email address",
-    "emailNotAllowed": "Email not allowed",
-    "signupNotAllowed": "Sign up is not allowed",
-    "userInactive": "User is not active",
-    "demoNote": "This is a demo version only. Do not upload personal data. Data may be erased periodically.",
-    "hostYour": "Host Your"
+    "sessionExpired": "Session expired"
   },
   "file": {
     "upload": "Upload file",
@@ -72,7 +58,6 @@
     "addFavorite": "Add to Favorites",
     "removeFavorite": "Remove from Favorites",
     "makeCopy": "Make a Copy",
-    "share": "Share",
     "moveTo": "Move to",
     "publish": "Publish",
     "moveToTrash": "Move to Trash",
@@ -92,13 +77,6 @@
     "newFolder": "New Folder"
   },
   "bucket": {
-    "create": "Create Bucket",
-    "name": "Bucket Name",
-    "placeholder": "Enter bucket name",
-    "hint": "Choose a unique bucket name. It can't be changed later.",
-    "required": "Bucket name is required",
-    "tooShort": "Bucket name must be at least 1 character",
-    "invalid": "Bucket name must start with a letter and can only contain lowercase letters, numbers, and hyphens",
     "exists": "Bucket already exists"
   },
   "search": {
@@ -122,18 +100,9 @@
     "entireDrive": "Entire Drive",
     "fileType": "File Type",
     "visibility": "Visibility",
-    "sharing": "Sharing",
-    "shared": "Shared",
-    "notShared": "Not Shared",
     "public": "public",
     "private": "private",
     "inherit": "inherit"
-  },
-  "share": {
-    "title": "Share {count} items",
-    "description": "Share files and folders with others or make them public on the web.",
-    "emailPlaceholder": "Type Email Address",
-    "peopleWithAccess": "People with access"
   },
   "move": {
     "title": "Move {name} {type}",
@@ -203,7 +172,7 @@
     "bucketNotFound": "Bucket not found",
     "network": "Network error",
     "generic": "An error occurred. Please try again.",
-    "unauthorized": "Unauthorized Access",
+    "unauthorized": "Unauthorized",
     "invalidPath": "Invalid Path",
     "invalidRequest": "Invalid Request",
     "nameExists": "Name already exists",
@@ -212,6 +181,9 @@
     "cantMove": "Can't move item",
     "cantCopy": "Can't make copy",
     "cantDelete": "Can't delete item",
-    "forbidden": "Forbidden"
+    "forbidden": "Forbidden",
+    "invalidPassword": "Invalid password",
+    "tooManyAttempts": "Too many attempts. Try again in 15 minutes.",
+    "passwordNotConfigured": "Admin password is not configured"
   }
 }

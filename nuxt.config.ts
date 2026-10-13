@@ -3,6 +3,13 @@ export default defineNuxtConfig({
   nitro: {
     preset: "cloudflare_module",
   },
+  runtimeConfig: {
+    adminPasswordHash: "",
+    bucketName: "files",
+    session: {
+      maxAge: 60 * 60 * 24 * 30,
+    },
+  },
   routeRules: {
     "/**": { ssr: false },
     "/api/**": { ssr: true },

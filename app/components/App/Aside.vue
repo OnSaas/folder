@@ -23,11 +23,6 @@ const items = computed(() => [
   ],
   [
     {
-      label: t("navigation.sharedWithMe"),
-      icon: "lucide:circle-user",
-      to: `/${route.params.bucket}/shared`,
-    },
-    {
       label: t("navigation.published"),
       icon: "lucide:globe",
       to: `/${route.params.bucket}/published`,

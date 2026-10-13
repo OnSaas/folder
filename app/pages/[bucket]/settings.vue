@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { t } = useI18n();
 const route = useRoute();
-useSeoMeta({ title: "Settings" });
+useSeoMeta({ title: t("settings.title") });
 
 const username = ref("");
 const password = ref("");

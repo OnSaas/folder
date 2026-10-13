@@ -1,7 +1,6 @@
 <script setup lang="ts">
 const router = useRouter();
 const { bucket, loading } = useBucket();
-// buckets is an array of bucket objects redirect to the bucket page
 watch(bucket, () => {
   if (bucket.value?.name) {
     router.push(`/${bucket.value.name}`);
@@ -14,5 +13,7 @@ onMounted(() => {
 });
 </script>
 <template>
-  <CreateBucket v-if="!loading && !bucket" />
+  <div v-if="loading" class="flex justify-center py-24">
+    <UIcon name="lucide:loader-circle" class="animate-spin size-6" />
+  </div>
 </template>

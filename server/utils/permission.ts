@@ -1,8 +1,7 @@
 import { getBucket } from "./db";
 import { tError } from "./i18n";
 
-// @ts-ignore
-export const getVerifiedUser = async (event) => {
+export const getVerifiedUser = async (event: any) => {
   const { user } = await requireUserSession(event);
   if (!user) {
     throw createError({
@@ -12,8 +11,8 @@ export const getVerifiedUser = async (event) => {
   }
   return user;
 };
-// @ts-ignore
-export const verifyBucket = async (event) => {
+
+export const verifyBucket = async (event: any) => {
   const user = await getVerifiedUser(event);
   const params = getRouterParams(event);
   if (!params.bucket) {
@@ -29,11 +28,10 @@ export const verifyBucket = async (event) => {
       message: tError(event, "errors.bucketNotFound"),
     });
   }
-  // @ts-ignore
   if (bucket.userId !== user.id) {
     throw createError({
       status: 401,
-      message: tError(event, "auth.unauthorized"),
+      message: tError(event, "errors.unauthorized"),
     });
   }
   return { bucket, user };

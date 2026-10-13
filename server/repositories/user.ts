@@ -7,28 +7,24 @@ export const userRepository = {
     return getJson<UserRecord>(keys.user(id));
   },
 
-  async getByEmail(email: string): Promise<UserRecord | null> {
-    const id = await getJson<string>(keys.userEmail(email));
-    if (!id) return null;
-    return userRepository.get(id);
-  },
-
   async getByDavUsername(username: string): Promise<UserRecord | null> {
     const id = await getJson<string>(keys.davUser(username));
     if (!id) return null;
     return userRepository.get(id);
   },
 
-  async create(data: Omit<UserRecord, "schemaVersion" | "updatedAt"> & { updatedAt?: number }): Promise<UserRecord> {
+  async create(
+    data: Omit<UserRecord, "schemaVersion" | "updatedAt"> & { updatedAt?: number }
+  ): Promise<UserRecord> {
     const now = Date.now();
     const record: UserRecord = {
       schemaVersion: SCHEMA_VERSION,
       id: data.id,
       name: data.name,
-      email: data.email,
+      email: data.email ?? null,
       avatar: data.avatar ?? null,
       country: data.country ?? null,
-      status: data.status,
+      status: data.status ?? "active",
       provider: data.provider ?? null,
       locale: data.locale ?? null,
       davUsername: data.davUsername ?? null,
@@ -38,7 +34,6 @@ export const userRepository = {
       updatedAt: data.updatedAt ?? now,
     };
     await setJson(keys.user(record.id), record);
-    await setJson(keys.userEmail(record.email), record.id);
     if (record.davUsername) {
       await setJson(keys.davUser(record.davUsername), record.id);
     }
@@ -49,7 +44,6 @@ export const userRepository = {
     const before = previous ?? (await userRepository.get(record.id));
     const next = { ...record, schemaVersion: SCHEMA_VERSION, updatedAt: Date.now() };
     await setJson(keys.user(next.id), next);
-    await setJson(keys.userEmail(next.email), next.id);
     if (before?.davUsername && before.davUsername !== next.davUsername) {
       await delKey(keys.davUser(before.davUsername));
     }
@@ -83,7 +77,6 @@ export const userRepository = {
     const user = await userRepository.get(id);
     if (!user) return;
     await delKey(keys.user(id));
-    await delKey(keys.userEmail(user.email));
     if (user.davUsername) await delKey(keys.davUser(user.davUsername));
   },
 };

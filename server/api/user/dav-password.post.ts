@@ -1,11 +1,12 @@
 import { userRepository } from "~~/server/repositories/user";
+import { tError } from "~~/server/utils/i18n";
 
 const USERNAME = /^[a-zA-Z0-9._-]{3,32}$/;
 
 export default defineEventHandler(async (event) => {
   const { user } = await requireUserSession(event);
   if (!user?.id) {
-    throw createError({ status: 401, message: "Unauthorized" });
+    throw createError({ status: 401, message: tError(event, "errors.unauthorized") });
   }
   const body = await readBody<{ username?: string; password?: string }>(event);
   const username = (body?.username || "").trim().toLowerCase();

@@ -3,10 +3,14 @@ import type { FileRecord, UserRecord } from "../storage/types";
 import { userRepository } from "../repositories/user";
 import { bucketRepository } from "../repositories/bucket";
 import { fileRepository } from "../repositories/file";
-import { shareRepository } from "../repositories/share";
 import { favoriteRepository } from "../repositories/favorite";
+import { tError } from "./i18n";
 
 const perPage = 12;
+
+function fail(status: number, key: string): never {
+  throw createError({ status, message: tError(useEvent(), key) });
+}
 
 type QueryString = Record<string, unknown>;
 
@@ -65,7 +69,7 @@ function sortFiles(list: FileRecord[], queryString: QueryString) {
 function paginate<T>(list: T[], queryString: QueryString) {
   const page = Number(queryString.page || 1);
   if (page <= 0) {
-    throw createError({ status: 404, message: "Invalid Request" });
+    fail(404, "errors.invalidRequest");
   }
   const start = (page - 1) * perPage;
   const data = list.slice(start, start + perPage);
@@ -84,11 +88,6 @@ export async function createUser(data: CreateUserType) {
     status: "active",
     createdAt: data.createdAt ? new Date(data.createdAt).getTime() : now,
   });
-}
-
-export async function getUserByEmail(email: string) {
-  const user = await userRepository.getByEmail(email);
-  return user ? toApiUser(user) : null;
 }
 
 export async function getUser(id: string) {
@@ -124,7 +123,7 @@ export const getUserBucket = async (userId: string) => {
 export const createBucket = async (name: string, userId: string) => {
   const hasBucket = await getBucket(name);
   if (hasBucket) {
-    throw createError({ status: 400, message: "Bucket already exists" });
+    fail(400, "bucket.exists");
   }
   const now = Date.now();
   return bucketRepository.create({
@@ -256,10 +255,7 @@ export const ensurePath = async (
         current.id = folderId;
       } else {
         if (folderExists.type !== "folder") {
-          throw createError({
-            status: 400,
-            message: `Path conflict: '${current.path}' exists but is not a folder`,
-          });
+          fail(400, "errors.pathConflict");
         }
         current.id = folderExists.id;
         current.path = folderExists.path;
@@ -323,7 +319,7 @@ export const getParent = async (bucketName: string, id: string) => {
     if (folder && folder.type === "folder" && folder.bucketName === bucketName) {
       parent = { path: folder.path, id: folder.id };
     } else {
-      throw createError({ status: 404, message: "Folder not found" });
+      fail(404, "errors.folderNotFound");
     }
   }
   return parent;
@@ -377,7 +373,7 @@ export const unsetFavorite = async (userId: string, fileId: string) => {
 export const ensureFile = async (bucketName: string, id: string) => {
   const file = await fileRepository.get(id);
   if (!file || file.bucketName !== bucketName) {
-    throw createError({ status: 404, message: "File not found" });
+    fail(404, "errors.fileNotFound");
   }
   return toApiFile(file);
 };
@@ -419,26 +415,6 @@ export const getFavorites = async (event: any, userId: string) => {
   };
 };
 
-export const getSharedWithMe = async (userId: string, queryString: any) => {
-  const shares = await shareRepository.listByUser(userId);
-  const files = await fileRepository.getMany(shares.map((s) => s.fileId));
-  const live = files.filter((file) => !file.deletedAt);
-  const sorted = sortFiles(live, queryString);
-  const page = paginate(sorted, queryString);
-  const shareByFile = new Map(shares.map((s) => [s.fileId, s]));
-  return {
-    data: page.data.map((file) =>
-      toApiFile(file, {
-        role: shareByFile.get(file.id)?.role,
-        sharedAt: shareByFile.get(file.id)
-          ? new Date(shareByFile.get(file.id)!.createdAt)
-          : null,
-      })
-    ),
-    nextPage: page.nextPage,
-  };
-};
-
 export const getPublished = async (event: any, userId: string) => {
   const queryString = getQuery(event) as QueryString;
   const files = (await fileRepository.listByUser(userId)).filter(
@@ -472,31 +448,6 @@ export const setVisibility = async (bucketName: string, data: IFile) => {
     return { success: true };
   }
   return { success: false };
-};
-
-export const shareFiles = async (
-  bucketName: string,
-  files: IFile[],
-  members: Member[]
-) => {
-  for (const file of files) {
-    await ensureFile(bucketName, file.id);
-    const record = await fileRepository.get(file.id);
-    if (!record) continue;
-    for (const member of members) {
-      const user = await userRepository.getByEmail(member.email);
-      if (!user) continue;
-      await shareRepository.create({
-        fileId: file.id,
-        userId: user.id,
-        role: member.role || "viewer",
-        createdAt: Date.now(),
-      });
-    }
-    const shares = await shareRepository.listByFile(file.id);
-    await fileRepository.update({ ...record, sharedCount: shares.length }, record);
-  }
-  return { success: true };
 };
 
 export const getNestedFolders = async (bucketName: string, userId: string) => {
@@ -634,13 +585,13 @@ export const renameFile = async (
 ) => {
   const file = await fileRepository.get(fileId);
   if (!file || file.bucketName !== bucketName) {
-    throw createError({ status: 404, message: "File not found" });
+    fail(404, "errors.fileNotFound");
   }
   const parentPath = file.path.split("/").slice(0, -1).join("/");
   const newPath = parentPath ? `${parentPath}/${name}` : name;
   const conflict = await fileRepository.getByPath(bucketName, newPath);
   if (conflict && conflict.id !== file.id) {
-    throw createError({ status: 400, message: "Name already exists" });
+    fail(400, "errors.nameExists");
   }
   const oldPath = file.path;
   if (file.type !== "folder") {
@@ -660,14 +611,14 @@ export const moveFile = async (
 ) => {
   const file = await fileRepository.get(fileId);
   if (!file || file.bucketName !== bucketName) {
-    throw createError({ status: 404, message: "File not found" });
+    fail(404, "errors.fileNotFound");
   }
   const parent = await getParent(bucketName, parentId);
   const newPath = cleanPath(`${parent.path}/${file.name}`);
   if (newPath === file.path) return { success: true };
   const conflict = await fileRepository.getByPath(bucketName, newPath);
   if (conflict) {
-    throw createError({ status: 400, message: "Target already exists" });
+    fail(400, "errors.targetExists");
   }
   const oldPath = file.path;
   if (file.type !== "folder") {
@@ -690,13 +641,13 @@ export const copyFileItem = async (
 ) => {
   const file = await fileRepository.get(fileId);
   if (!file || file.bucketName !== bucketName) {
-    throw createError({ status: 404, message: "File not found" });
+    fail(404, "errors.fileNotFound");
   }
   const parentPath = file.path.split("/").slice(0, -1).join("/");
   const newPath = parentPath ? `${parentPath}/${name}` : name;
   const conflict = await fileRepository.getByPath(bucketName, newPath);
   if (conflict) {
-    throw createError({ status: 400, message: "Name already exists" });
+    fail(400, "errors.nameExists");
   }
   if (file.type !== "folder") {
     await copyBlob(file.path, newPath);

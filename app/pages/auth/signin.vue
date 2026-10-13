@@ -8,9 +8,6 @@ useSeoMeta({
 
 <template>
   <section class="grow flex justify-center items-center">
-    <AuthCard
-      :title="$t('auth.signInOrUp')"
-      :description="$t('auth.signInHint')"
-    />
+    <AuthCard />
   </section>
 </template>

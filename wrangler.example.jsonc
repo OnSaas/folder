@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "folder",
+  "account_id": "<cloudflare-account-id>",
+  "main": "./dist/server/index.mjs",
+  "compatibility_date": "2025-03-10",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "kv_namespaces": [
+    {
+      "binding": "KV",
+      "id": "<kv-namespace-id>"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BLOB",
+      "bucket_name": "<r2-bucket-name>"
+    }
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist/public"
+  }
+}

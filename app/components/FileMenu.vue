@@ -6,7 +6,6 @@ const { openPublish } = usePublish();
 const { openMove } = useMove();
 const { openCopy } = useCopy();
 const { openRename } = useRename();
-const { openShare } = useShare();
 const props = defineProps(["file"]);
 const emit = defineEmits(["delete"]);
 const fileMenuItems = computed(() => [
@@ -66,13 +65,6 @@ const fileMenuItems = computed(() => [
     },
   ],
   [
-    {
-      label: t("file.share"),
-      icon: "lucide:user-plus",
-      onSelect: () => {
-        openShare([props.file]);
-      },
-    },
     {
       label: t("file.moveTo"),
       icon: "lucide:folder-input",

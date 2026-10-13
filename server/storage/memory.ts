@@ -16,4 +16,8 @@ export class MemoryKv implements KvStore {
   async del(key: string): Promise<void> {
     this.store.delete(key);
   }
+
+  async keys(prefix = ""): Promise<string[]> {
+    return [...this.store.keys()].filter((key) => key.startsWith(prefix));
+  }
 }

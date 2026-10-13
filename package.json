@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-app",
+  "name": "folder",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,7 +10,8 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "node --import tsx --test server/storage/kv.test.ts server/utils/webdav.test.ts",
+    "test": "node --import tsx --test --test-concurrency=1 server/storage/kv.test.ts server/utils/webdav.test.ts server/utils/password.test.ts server/utils/rate-limit.test.ts server/utils/api-guard.test.ts",
+    "hash-password": "node scripts/hash-password.mjs",
     "deploy": "node scripts/cf-deploy.mjs"
   },
   "dependencies": {

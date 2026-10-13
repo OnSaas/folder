@@ -6,7 +6,6 @@ const defaultValue = {
   drive: false,
   contentType: "",
   visibility: "",
-  shared: "",
 };
 const filters = ref({ ...defaultValue });
 const fileTypeOptions = computed(() => {
@@ -16,10 +15,6 @@ const fileTypeOptions = computed(() => {
     icon: fileIcons[key],
   }));
 });
-const sharedOptions = computed(() => [
-  { value: "yes", label: t("filter.shared") },
-  { value: "no", label: t("filter.notShared") },
-]);
 const reset = () => {
   filters.value = { ...defaultValue };
   emit("update", null);
@@ -53,12 +48,6 @@ const hasFilters = computed(() => {
             { value: 'public', label: t('filter.public') },
             { value: 'private', label: t('filter.private') },
           ]"
-          variant="outline"
-        />
-        <USelect
-          :placeholder="$t('filter.sharing')"
-          v-model="filters.shared"
-          :items="sharedOptions"
           variant="outline"
         />
         <div class="flex flex-row items-center justify-between gap-2">

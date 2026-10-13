@@ -23,6 +23,7 @@ logs
 .env.*
 !.env.example
 wrangler.toml
+wrangler.jsonc
 # wrangler files
 .wrangler
 .dev.vars
