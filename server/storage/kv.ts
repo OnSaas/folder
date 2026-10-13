@@ -17,8 +17,12 @@ export async function getJson<T>(key: string): Promise<T | null> {
   return value ?? null;
 }
 
-export async function setJson(key: string, value: unknown): Promise<void> {
-  await useStorageKv().set(key, value);
+export async function setJson(
+  key: string,
+  value: unknown,
+  ttlSeconds?: number
+): Promise<void> {
+  await useStorageKv().set(key, value, ttlSeconds ? { ttl: ttlSeconds } : undefined);
 }
 
 export async function delKey(key: string): Promise<void> {

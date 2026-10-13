@@ -263,20 +263,20 @@ export async function handleDav(event: any) {
     throw createError({ status: 401, message: tError(event, "errors.unauthorized") });
   }
   const ip = clientIp(event);
-  const limited = await assertNotRateLimited(ip);
+  const limited = await assertNotRateLimited("dav", ip);
   if (limited.limited) {
     throw createError({ status: 429, message: tError(event, "errors.tooManyAttempts") });
   }
   const session = await resolveDavUser(creds.user, creds.pass);
   if (!session) {
-    const next = await recordAuthFailure(ip);
+    const next = await recordAuthFailure("dav", ip);
     setResponseHeader(event, "WWW-Authenticate", 'Basic realm="Folder DAV"');
     if (next.limited) {
       throw createError({ status: 429, message: tError(event, "errors.tooManyAttempts") });
     }
     throw createError({ status: 401, message: tError(event, "errors.unauthorized") });
   }
-  await clearAuthFailures(ip);
+  await clearAuthFailures("dav", ip);
 
   const { user, bucket } = session;
   const node = await resolveNode(bucket.name, rel);

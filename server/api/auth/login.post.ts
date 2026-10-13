@@ -14,7 +14,7 @@ import { ensureOwnerAndBucket } from "~~/server/utils/owner";
 
 export default defineEventHandler(async (event) => {
   const ip = clientIp(event);
-  const limited = await assertNotRateLimited(ip);
+  const limited = await assertNotRateLimited("web", ip);
   if (limited.limited) {
     throw createError({
       status: 429,
@@ -34,7 +34,7 @@ export default defineEventHandler(async (event) => {
   const password = typeof body?.password === "string" ? body.password : "";
   const ok = password ? await verifyPassword(password, stored) : false;
   if (!ok) {
-    const next = await recordAuthFailure(ip);
+    const next = await recordAuthFailure("web", ip);
     if (next.limited) {
       throw createError({
         status: 429,
@@ -47,7 +47,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  await clearAuthFailures(ip);
+  await clearAuthFailures("web", ip);
   const { user } = await ensureOwnerAndBucket();
   await setUserSession(event, {
     user: {

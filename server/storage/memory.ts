@@ -1,16 +1,23 @@
 import type { KvStore } from "./types";
 
 export class MemoryKv implements KvStore {
-  store = new Map<string, string>();
+  store = new Map<string, { value: string; expiresAt?: number }>();
 
   async get<T = unknown>(key: string): Promise<T | null> {
-    const raw = this.store.get(key);
-    if (raw === undefined) return null;
-    return JSON.parse(raw) as T;
+    const entry = this.store.get(key);
+    if (entry === undefined) return null;
+    if (entry.expiresAt !== undefined && entry.expiresAt <= Date.now()) {
+      this.store.delete(key);
+      return null;
+    }
+    return JSON.parse(entry.value) as T;
   }
 
-  async set(key: string, value: unknown): Promise<void> {
-    this.store.set(key, JSON.stringify(value));
+  async set(key: string, value: unknown, opts?: { ttl?: number }): Promise<void> {
+    this.store.set(key, {
+      value: JSON.stringify(value),
+      expiresAt: opts?.ttl ? Date.now() + opts.ttl * 1000 : undefined,
+    });
   }
 
   async del(key: string): Promise<void> {
@@ -18,6 +25,13 @@ export class MemoryKv implements KvStore {
   }
 
   async keys(prefix = ""): Promise<string[]> {
-    return [...this.store.keys()].filter((key) => key.startsWith(prefix));
+    const now = Date.now();
+    return [...this.store.entries()]
+      .filter(
+        ([key, entry]) =>
+          key.startsWith(prefix) &&
+          (entry.expiresAt === undefined || entry.expiresAt > now)
+      )
+      .map(([key]) => key);
   }
 }

@@ -63,7 +63,7 @@ export type ShareRecord = {
 
 export type KvStore = {
   get<T = unknown>(key: string): Promise<T | null>;
-  set(key: string, value: unknown): Promise<void>;
+  set(key: string, value: unknown, opts?: { ttl?: number }): Promise<void>;
   del(key: string): Promise<void>;
   keys?(prefix?: string): Promise<string[]>;
 };
