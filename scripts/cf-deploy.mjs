@@ -16,7 +16,12 @@ function run(cmd, args, cwd = root) {
   if (r.status !== 0) process.exit(r.status ?? 1);
 }
 
-run("npm", ["run", "build"]);
+function bin(name) {
+  const local = join(root, "node_modules", ".bin", name);
+  return existsSync(local) ? local : name;
+}
+
+run(bin("nuxt"), ["build"]);
 
 const nitroPath = join(root, "dist/server/chunks/nitro/nitro.mjs");
 let nitro = readFileSync(nitroPath, "utf8");
@@ -56,4 +61,4 @@ const out = {
 writeFileSync(wranglerDst, JSON.stringify(out, null, 2) + "\n");
 
 if (src.account_id) process.env.CLOUDFLARE_ACCOUNT_ID = src.account_id;
-run("npx", ["wrangler", "deploy", "--keep-vars"], join(root, "dist/server"));
+run(bin("wrangler"), ["deploy", "--keep-vars"], join(root, "dist/server"));
