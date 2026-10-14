@@ -1,9 +1,5 @@
 <script setup>
 const route = useRoute();
-const { loggedIn } = useUserSession();
-if (!loggedIn.value) {
-  navigateTo("/auth/signin");
-}
 const { aside } = useAside();
 const { folder } = useFolder();
 </script>

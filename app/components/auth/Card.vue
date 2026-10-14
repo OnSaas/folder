@@ -1,15 +1,11 @@
 <script setup lang="ts">
 const { t } = useI18n();
-const { loggedIn, fetch: fetchSession } = useUserSession();
+const { fetch: fetchSession } = useUserSession();
 const colorMode = useColorMode();
 const password = ref("");
 const error = ref("");
 const loading = ref(false);
 const isDark = computed(() => colorMode.value === "dark");
-
-if (loggedIn.value) {
-  await navigateTo("/");
-}
 
 const submit = async () => {
   error.value = "";
