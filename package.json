@@ -11,7 +11,7 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "test": "node --import tsx --test --test-concurrency=1 server/storage/kv.test.ts server/storage/drivers/contract.test.ts server/utils/webdav.test.ts server/utils/password.test.ts server/utils/rate-limit.test.ts server/utils/api-guard.test.ts server/utils/owner.test.ts server/utils/auth-flow.test.ts",
+    "test": "node --import tsx --test --test-concurrency=1 server/storage/kv.test.ts server/storage/drivers/contract.test.ts server/storage/drivers/s3.test.ts server/utils/webdav.test.ts server/utils/password.test.ts server/utils/rate-limit.test.ts server/utils/api-guard.test.ts server/utils/owner.test.ts server/utils/auth-flow.test.ts",
     "hash-password": "node scripts/hash-password.mjs",
     "deploy": "node scripts/cf-deploy.mjs"
   },
@@ -23,6 +23,7 @@
     "@nuxthub/core": "^0.8.17",
     "@nuxtjs/i18n": "^9.5.6",
     "@vueuse/core": "^15.0.0",
+    "aws4fetch": "^1.0.20",
     "nuxt": "^3.16.0",
     "nuxt-auth-utils": "^0.5.16",
     "ulidx": "^2.4.1"

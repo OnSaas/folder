@@ -16,4 +16,9 @@ export const keys = {
   sharedUser: (userId: string) => `idx:shared:user:${userId}`,
   sharedFile: (fileId: string) => `idx:shared:file:${fileId}`,
   trash: (userId: string) => `idx:trash:${userId}`,
+  storage: (id: string) => `storage:${id}`,
+  storageMount: (mountPath: string) => `idx:storage:mount:${mountPath}`,
+  storageList: () => `idx:storage:list`,
+  listCache: (storageId: string, digest: string) =>
+    `cache:list:${storageId}:${digest}`,
 };

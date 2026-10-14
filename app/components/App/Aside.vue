@@ -3,44 +3,57 @@ const route = useRoute();
 const { aside } = useAside();
 const { t } = useI18n();
 
-const items = computed(() => [
-  [
-    {
-      label: t("navigation.home"),
-      icon: "lucide:home",
-      to: `/${route.params.bucket}/`,
-    },
-    {
-      label: t("navigation.recent"),
-      icon: "lucide:clock",
-      to: `/${route.params.bucket}/recent`,
-    },
-    {
-      label: t("navigation.favorites"),
-      icon: "lucide:star",
-      to: `/${route.params.bucket}/favorites`,
-    },
-  ],
-  [
-    {
-      label: t("navigation.published"),
-      icon: "lucide:globe",
-      to: `/${route.params.bucket}/published`,
-    },
-  ],
-  [
-    {
-      label: t("navigation.trash"),
-      icon: "lucide:trash",
-      to: `/${route.params.bucket}/trash`,
-    },
-    {
-      label: t("navigation.settings"),
-      icon: "lucide:settings",
-      to: `/${route.params.bucket}/settings`,
-    },
-  ],
-]);
+const { data: storages } = await useFetch("/api/storages");
+
+const items = computed(() => {
+  const bucket = route.params.bucket;
+  const mounts = (storages.value || [])
+    .filter((item: any) => item.id !== "primary")
+    .map((item: any) => ({
+      label: item.name,
+      icon: "lucide:hard-drive",
+      to: `/${bucket}/mount/${item.mountPath}/`,
+    }));
+  return [
+    [
+      {
+        label: t("navigation.home"),
+        icon: "lucide:home",
+        to: `/${bucket}/`,
+      },
+      {
+        label: t("navigation.recent"),
+        icon: "lucide:clock",
+        to: `/${bucket}/recent`,
+      },
+      {
+        label: t("navigation.favorites"),
+        icon: "lucide:star",
+        to: `/${bucket}/favorites`,
+      },
+    ],
+    [
+      {
+        label: t("navigation.published"),
+        icon: "lucide:globe",
+        to: `/${bucket}/published`,
+      },
+    ],
+    mounts,
+    [
+      {
+        label: t("navigation.trash"),
+        icon: "lucide:trash",
+        to: `/${bucket}/trash`,
+      },
+      {
+        label: t("navigation.settings"),
+        icon: "lucide:settings",
+        to: `/${bucket}/settings`,
+      },
+    ],
+  ];
+});
 </script>
 
 <template>

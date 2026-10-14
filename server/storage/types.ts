@@ -58,6 +58,24 @@ export type ShareRecord = {
   createdAt: number;
 };
 
+export type StorageStatus = "ok" | "error" | "unknown";
+
+export type StorageRecord = {
+  schemaVersion: typeof SCHEMA_VERSION;
+  id: string;
+  name: string;
+  type: "r2" | "s3" | "webdav" | "onedrive" | "gdrive";
+  mountPath: string;
+  readOnly: boolean;
+  config: Record<string, unknown>;
+  secret: string | null;
+  status: StorageStatus;
+  lastCheckedAt?: number;
+  lastError?: string;
+  createdAt: number;
+  updatedAt: number;
+};
+
 export type KvStore = {
   get<T = unknown>(key: string): Promise<T | null>;
   set(key: string, value: unknown, opts?: { ttl?: number }): Promise<void>;

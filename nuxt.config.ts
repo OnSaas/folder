@@ -5,6 +5,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     adminPasswordHash: "",
+    storageSecret: "",
     bucketName: "files",
     session: {
       password: "",

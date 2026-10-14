@@ -179,6 +179,7 @@ const saveDav = async () => {
           </div>
         </details>
       </div>
+      <StorageManager />
     </div>
   </AppMain>
 </template>

@@ -12,6 +12,8 @@ describe("api guard", () => {
     assert.equal(shouldProtectApi("/api/auth/login"), false);
     assert.equal(shouldProtectApi("/api/auth/logout"), true);
     assert.equal(shouldProtectApi("/api/bucket"), true);
+    assert.equal(shouldProtectApi("/api/storages"), true);
+    assert.equal(shouldProtectApi("/api/mounts/b2/list"), true);
     assert.equal(shouldProtectApi("/preview/files/a.png"), true);
     assert.equal(shouldProtectApi("/upload/files/x/y/z"), true);
     assert.equal(shouldProtectApi("/public/files/a.html"), false);
