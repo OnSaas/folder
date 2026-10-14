@@ -5,6 +5,7 @@ import { bucketRepository } from "../repositories/bucket";
 import { fileRepository } from "../repositories/file";
 import { favoriteRepository } from "../repositories/favorite";
 import { tError } from "./i18n";
+import { trashObjectKey } from "../storage/drivers";
 
 const perPage = 12;
 
@@ -40,6 +41,8 @@ function toApiFile(file: FileRecord, extra: Record<string, unknown> = {}) {
     userId: file.userId,
     parentId: file.parentId,
     metadata: file.metadata,
+    storageId: file.storageId || "primary",
+    trashKey: file.trashKey || null,
     createdAt: new Date(file.createdAt),
     updatedAt: new Date(file.updatedAt),
     deletedAt: file.deletedAt ? new Date(file.deletedAt) : null,
@@ -527,12 +530,12 @@ export const deleteFiles = async (bucketName: string, items: string[]) => {
   await Promise.all(
     records.map(async (item) => {
       if (item.deletedAt) return;
-      await fileRepository.update({ ...item, deletedAt }, item);
       if (item.type !== "folder") {
-        await moveBlob(
-          item.path,
-          `.trash/${bucketName}/${new Date(deletedAt).toISOString()}/${item.path}`
-        );
+        const trashKey = trashObjectKey(item.path, deletedAt);
+        await moveBlob(item.path, trashKey);
+        await fileRepository.update({ ...item, deletedAt, trashKey }, item);
+      } else {
+        await fileRepository.update({ ...item, deletedAt }, item);
       }
     })
   );

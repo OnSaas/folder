@@ -9,6 +9,7 @@ import {
   renameFile,
 } from "./db";
 import { copyBlob } from "./blob";
+import { getDriver } from "../storage/drivers";
 import { getContentType, cleanPath } from "../../shared/utils/helper";
 import type { FileRecord } from "../storage/types";
 import { tError } from "./i18n";
@@ -345,9 +346,9 @@ export async function handleDav(event: any) {
     setResponseHeader(event, "ETag", `"${node.file.id}-${node.file.updatedAt}"`);
     setResponseHeader(event, "Last-Modified", rfc1123(node.file.updatedAt));
     if (method === "HEAD") return "";
-    const blob = await hubBlob().get(node.file.path);
+    const blob = await getDriver(node.file.storageId || "primary").get(node.file.path);
     if (!blob) throw createError({ status: 404, message: "Not Found" });
-    return blob;
+    return blob.body;
   }
 
   if (method === "MKCOL") {
@@ -373,7 +374,7 @@ export async function handleDav(event: any) {
     else if (typeof raw === "string") bytes = new TextEncoder().encode(raw);
     else bytes = raw instanceof Uint8Array ? raw : new Uint8Array(raw as ArrayBuffer);
     const contentType = getHeader(event, "content-type") || getContentType(fullPath);
-    await hubBlob().put(fullPath, bytes, { contentType });
+    await getDriver().put(fullPath, bytes, { contentType, size: bytes.byteLength });
     const parentRel = rel.split("/").slice(0, -1).join("/");
     const parent = parentRel
       ? await fileRepository.getByPath(bucket.name, cleanPath(`${bucket.name}/${parentRel}`))

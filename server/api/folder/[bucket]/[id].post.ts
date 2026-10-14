@@ -1,3 +1,5 @@
+import { getDriver } from "~~/server/storage/drivers";
+
 export default defineEventHandler(async (event) => {
   const { user } = await verifyBucket(event);
   // @ts-ignore
@@ -48,7 +50,10 @@ export default defineEventHandler(async (event) => {
     }
     const contentType = validTextFiles[ext];
     const emptyFile = new Blob([""], { type: contentType });
-    hubBlob().put(fullPath, emptyFile);
+    await getDriver().put(fullPath, await emptyFile.arrayBuffer(), {
+      contentType,
+      size: 0,
+    });
     return insertUpdateFile(params.bucket, parent.id, {
       name: fileName,
       fullPath,

@@ -1,5 +1,6 @@
 import { insertUpdateFile, updateContentType } from "~~/server/utils/db";
 import { getContentType } from "~~/shared/utils/helper";
+import { getDriver, R2Driver } from "~~/server/storage/drivers";
 
 export default eventHandler(async (event) => {
   const { user } = await verifyBucket(event);
@@ -20,7 +21,11 @@ export default eventHandler(async (event) => {
       });
     }
   }
-  const response = await hubBlob().handleMultipartUpload(event);
+  const driver = getDriver();
+  if (!(driver instanceof R2Driver)) {
+    throw createError({ status: 501, message: "Multipart upload requires R2" });
+  }
+  const response = await driver.handleMultipartUpload(event);
   if (response.action === "complete") {
     // Remove the prefix only from the start of the pathname
     let contentType =
@@ -41,7 +46,7 @@ export default eventHandler(async (event) => {
       dimensions,
     });
     if (file && file.id) {
-      const metadata = await hubBlob().head(file.path);
+      const metadata = await getDriver(file.storageId || "primary").head(file.path);
       if (
         metadata &&
         metadata.contentType &&

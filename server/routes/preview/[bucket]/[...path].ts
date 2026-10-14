@@ -1,3 +1,6 @@
+import { getDriver, trashObjectKey } from "~~/server/storage/drivers";
+import { serveObject } from "~~/server/storage/drivers/serve";
+
 export default defineEventHandler(async (event) => {
   await verifyBucket(event);
   const params = getRouterParams(event);
@@ -22,9 +25,9 @@ export default defineEventHandler(async (event) => {
   }
   if (file.type !== "folder") {
     const filePath = deletedAt
-      ? `.trash/${params.bucket}/${deletedAt.toISOString()}/${fullPath}`
+      ? file.trashKey || trashObjectKey(fullPath, deletedAt.getTime())
       : fullPath;
-    return await hubBlob().serve(event, filePath);
+    return serveObject(event, getDriver(file.storageId || "primary"), filePath);
   } else {
     throw createError({
       status: 404,

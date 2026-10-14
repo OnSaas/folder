@@ -45,6 +45,8 @@ export type FileRecord = {
   createdAt: number;
   updatedAt: number;
   deletedAt?: number | null;
+  storageId?: string | null;
+  trashKey?: string | null;
 };
 
 export type ShareRecord = {

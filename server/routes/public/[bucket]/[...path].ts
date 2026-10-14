@@ -1,4 +1,6 @@
 import { isParentPublic } from "~~/server/utils/db";
+import { getDriver } from "~~/server/storage/drivers";
+import { serveObject } from "~~/server/storage/drivers/serve";
 
 export default defineEventHandler(async (event) => {
   const params = getRouterParams(event);
@@ -16,9 +18,9 @@ export default defineEventHandler(async (event) => {
       message: "Page not found",
     });
   }
-  // check if the file is public.
+  const driver = getDriver(file.storageId || "primary");
   if (file.visibility === "public") {
-    return await hubBlob().serve(event, `${params.bucket}/${params.path}`);
+    return await serveObject(event, driver, `${params.bucket}/${params.path}`);
   }
   const isPublic = await isParentPublic(params.bucket, params.path);
   if (!isPublic) {
@@ -28,15 +30,15 @@ export default defineEventHandler(async (event) => {
     });
   }
   if (file.type === "folder") {
-    // Create Index if has index.html
     const indexFile = await getFile(params.bucket, `${params.path}/index.html`);
     if (indexFile) {
-      return await hubBlob().serve(
+      return await serveObject(
         event,
+        getDriver(indexFile.storageId || "primary"),
         `${params.bucket}/${params.path}/index.html`
       );
     }
   } else {
-    return await hubBlob().serve(event, `${params.bucket}/${params.path}`);
+    return await serveObject(event, driver, `${params.bucket}/${params.path}`);
   }
 });

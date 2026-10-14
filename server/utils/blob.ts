@@ -1,11 +1,13 @@
 import { tError } from "./i18n";
+import { getDriver, trashObjectKey } from "../storage/drivers";
 
 export const moveBlob = async (source: string, target: string) => {
   try {
-    const blob = await hubBlob().get(source);
-    if (blob) {
-      await hubBlob().put(target, blob);
-      await hubBlob().del(source);
+    const driver = getDriver();
+    if (driver.move) await driver.move(source, target);
+    else if (driver.copy) {
+      await driver.copy(source, target);
+      await driver.delete(source);
     }
   } catch (err) {
     failBlob("errors.cantMove");
@@ -14,10 +16,8 @@ export const moveBlob = async (source: string, target: string) => {
 
 export const copyBlob = async (source: string, target: string) => {
   try {
-    const blob = await hubBlob().get(source);
-    if (blob) {
-      return hubBlob().put(target, blob);
-    }
+    const driver = getDriver();
+    if (driver.copy) return driver.copy(source, target);
   } catch (err) {
     failBlob("errors.cantCopy");
   }
@@ -25,10 +25,12 @@ export const copyBlob = async (source: string, target: string) => {
 
 export const deleteBlob = async (path: string, timestamp: number) => {
   try {
-    const blob = await hubBlob().get(path);
-    if (blob) {
-      await hubBlob().put(`_trash/${timestamp}/${path}`, blob);
-      await hubBlob().del(path);
+    const driver = getDriver();
+    const key = trashObjectKey(path, timestamp);
+    if (driver.move) await driver.move(path, key);
+    else if (driver.copy) {
+      await driver.copy(path, key);
+      await driver.delete(path);
     }
   } catch (err) {
     failBlob("errors.cantDelete");
