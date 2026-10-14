@@ -1,8 +1,11 @@
 <script setup>
 const route = useRoute();
-const { aside, toggle } = useAside();
+const { aside, toggle, close } = useAside();
 defineShortcuts({
   meta_b: toggle,
+  escape: () => {
+    if (aside.value) close();
+  },
 });
 </script>
 <template>
