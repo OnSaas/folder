@@ -58,18 +58,17 @@ export async function listKeys(prefix: string): Promise<string[]> {
     const found = await store.keys(prefix);
     return Array.isArray(found) ? found.filter((key) => key.startsWith(prefix)) : [];
   }
-  try {
-    const hub = hubKV() as unknown as {
-      getKeys?: (base?: string) => Promise<string[]>;
-      keys?: (base?: string) => Promise<string[]>;
-    };
-    const keys = hub.getKeys
-      ? await hub.getKeys(prefix)
-      : hub.keys
-        ? await hub.keys(prefix)
-        : [];
-    return Array.isArray(keys) ? keys.filter((key) => key.startsWith(prefix)) : [];
-  } catch {
-    return [];
+  const hub = hubKV() as unknown as {
+    getKeys?: (base?: string) => Promise<string[]>;
+    keys?: (base?: string) => Promise<string[]>;
+  };
+  if (typeof hub.getKeys === "function") {
+    const found = await hub.getKeys(prefix);
+    return Array.isArray(found) ? found.filter((key) => key.startsWith(prefix)) : [];
   }
+  if (typeof hub.keys === "function") {
+    const found = await hub.keys(prefix);
+    return Array.isArray(found) ? found.filter((key) => key.startsWith(prefix)) : [];
+  }
+  throw new Error("KV keys listing is not supported");
 }

@@ -19,16 +19,28 @@ function configuredBucketName() {
   return process.env.NUXT_BUCKET_NAME || DEFAULT_BUCKET_NAME;
 }
 
+function multipleBucketsError() {
+  const err = new Error(
+    "Multiple buckets found; set NUXT_BUCKET_NAME to pick one"
+  ) as Error & { statusCode?: number; status?: number };
+  err.statusCode = 500;
+  err.status = 500;
+  return err;
+}
+
 async function findExistingBucket(): Promise<BucketRecord | null> {
   const named = await bucketRepository.getByName(configuredBucketName());
   if (named) return named;
   const listed = await listKeys("bucket:");
+  const found: BucketRecord[] = [];
   for (const key of listed) {
     if (!/^bucket:[^:]+$/.test(key)) continue;
     const rec = await getJson<BucketRecord>(key);
-    if (rec?.userId) return rec;
+    if (rec?.userId) found.push(rec);
   }
-  return null;
+  if (found.length === 0) return null;
+  if (found.length === 1) return found[0];
+  throw multipleBucketsError();
 }
 
 export async function ensureOwnerAndBucket(): Promise<{
