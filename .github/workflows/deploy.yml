@@ -18,9 +18,9 @@ jobs:
 
       - name: Install
         run: |
-          if [ -f .npmrc ]; then mv .npmrc .npmrc.pnpm; fi
-          npm ci --ignore-scripts --no-audit --no-fund
-          if [ -f .npmrc.pnpm ]; then mv .npmrc.pnpm .npmrc; fi
+          corepack enable
+          corepack prepare pnpm@9.15.9 --activate
+          pnpm install --ignore-scripts
 
       - name: Prepare
         run: npx nuxt prepare
