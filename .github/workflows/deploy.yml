@@ -63,6 +63,7 @@ jobs:
             r2_buckets: [{ binding: "BLOB", bucket_name: bucket }],
             assets: { binding: "ASSETS", directory: "./dist/public" },
             routes: [{ pattern: "box.oonn.me", custom_domain: true }],
+            triggers: { crons: ["* * * * *"] },
           };
           writeFileSync("wrangler.jsonc", JSON.stringify(config, null, 2) + "\n");
           JS

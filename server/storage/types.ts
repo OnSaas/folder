@@ -76,6 +76,54 @@ export type StorageRecord = {
   updatedAt: number;
 };
 
+export type SyncSchedule =
+  | { kind: "manual" }
+  | { kind: "interval"; everyMinutes: number }
+  | { kind: "cron"; expr: string; tz: string };
+
+export type SyncJob = {
+  schemaVersion: typeof SCHEMA_VERSION;
+  id: string;
+  name: string;
+  enabled: boolean;
+  sourcePrefix: string;
+  targetStorageId: string;
+  targetPrefix: string;
+  mode: "incremental" | "full";
+  deletePolicy: "keep" | "trash" | "mirror";
+  conflict: "overwrite" | "skip" | "newer";
+  excludes: string[];
+  schedule: SyncSchedule;
+  weeklyFullVerify?: boolean;
+  lastRunAt?: number;
+  lastSuccessStartedAt?: number;
+  nextRunAt?: number;
+  failedPaths: string[];
+  createdAt: number;
+  updatedAt: number;
+};
+
+export type SyncRun = {
+  schemaVersion: typeof SCHEMA_VERSION;
+  id: string;
+  jobId: string;
+  trigger: "schedule" | "manual";
+  mode: "incremental" | "full";
+  status: "queued" | "running" | "success" | "partial" | "failed" | "cancelled";
+  startedAt: number;
+  finishedAt?: number;
+  cursor?: string;
+  stats: {
+    scanned: number;
+    copied: number;
+    skipped: number;
+    deleted: number;
+    failed: number;
+    bytes: number;
+  };
+  errors: { path: string; message: string }[];
+};
+
 export type KvStore = {
   get<T = unknown>(key: string): Promise<T | null>;
   set(key: string, value: unknown, opts?: { ttl?: number }): Promise<void>;

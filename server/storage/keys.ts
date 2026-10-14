@@ -21,4 +21,9 @@ export const keys = {
   storageList: () => `idx:storage:list`,
   listCache: (storageId: string, digest: string) =>
     `cache:list:${storageId}:${digest}`,
+  syncJob: (id: string) => `sync:job:${id}`,
+  syncJobs: () => `idx:sync:jobs`,
+  syncRun: (id: string) => `sync:run:${id}`,
+  syncRuns: (jobId: string) => `idx:sync:runs:${jobId}`,
+  syncLock: (jobId: string) => `sync:lock:${jobId}`,
 };

@@ -2,6 +2,12 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   nitro: {
     preset: "cloudflare_module",
+    experimental: {
+      tasks: true,
+    },
+    scheduledTasks: {
+      "* * * * *": ["sync:tick"],
+    },
   },
   runtimeConfig: {
     adminPasswordHash: "",

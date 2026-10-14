@@ -56,6 +56,7 @@ const out = {
   kv_namespaces: src.kv_namespaces,
   r2_buckets: src.r2_buckets,
   routes: src.routes,
+  triggers: src.triggers,
   assets: { binding: "ASSETS", directory: "../public" },
 };
 writeFileSync(wranglerDst, JSON.stringify(out, null, 2) + "\n");

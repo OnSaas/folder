@@ -175,7 +175,19 @@
     "readOnly": "只读",
     "statusOk": "正常",
     "statusError": "异常",
-    "statusUnknown": "未知"
+    "statusUnknown": "未知",
+    "sync": "备份",
+    "syncHint": "从主存储单向复制到已添加的外部存储。v1 只支持主存储 → 外部。目标删除策略默认保留。",
+    "syncAdd": "添加备份任务",
+    "syncName": "任务名称",
+    "syncSource": "源路径前缀（空=全部）",
+    "syncTarget": "目标前缀",
+    "syncRun": "立即运行",
+    "syncRan": "已开始备份",
+    "syncManual": "手动",
+    "syncInterval": "间隔",
+    "syncEveryMinutes": "每 N 分钟",
+    "syncExcludes": "排除规则，逗号分隔"
   },
   "usage": {
     "storage": "存储用量",

@@ -175,7 +175,19 @@
     "readOnly": "Read-only",
     "statusOk": "Connected",
     "statusError": "Error",
-    "statusUnknown": "Unknown"
+    "statusUnknown": "Unknown",
+    "sync": "Backup",
+    "syncHint": "Copy from the primary drive to a mounted storage. v1 is one-way. Deletes on the destination default to keep.",
+    "syncAdd": "Add backup job",
+    "syncName": "Job name",
+    "syncSource": "Source prefix (empty = all)",
+    "syncTarget": "Destination prefix",
+    "syncRun": "Run now",
+    "syncRan": "Backup started",
+    "syncManual": "Manual",
+    "syncInterval": "Interval",
+    "syncEveryMinutes": "Every N minutes",
+    "syncExcludes": "Excludes, comma-separated"
   },
   "usage": {
     "storage": "Storage Usage",

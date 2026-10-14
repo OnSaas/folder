@@ -180,6 +180,7 @@ const saveDav = async () => {
         </details>
       </div>
       <StorageManager />
+      <SyncManager />
     </div>
   </AppMain>
 </template>

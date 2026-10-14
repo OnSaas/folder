@@ -23,5 +23,8 @@
   "assets": {
     "binding": "ASSETS",
     "directory": "./dist/public"
+  },
+  "triggers": {
+    "crons": ["* * * * *"]
   }
 }
