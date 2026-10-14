@@ -15,9 +15,7 @@ Single-user, self-hosted file manager on Cloudflare Workers. Store files in R2, 
 
 ## Deploy
 
-1. Create a KV namespace and an R2 bucket.
-2. Copy `wrangler.example.jsonc` to `wrangler.jsonc` and fill in `account_id`, KV id, and R2 bucket name.
-3. Install and hash a password:
+1. Install dependencies and hash a password:
 
 ```sh
 git clone https://github.com/OnSaas/folder.git
@@ -26,7 +24,9 @@ npm install
 npm run hash-password
 ```
 
-4. Put secrets (do not commit them):
+2. Create a KV namespace and an R2 bucket, then copy `wrangler.example.jsonc` to `wrangler.jsonc` and fill in `account_id`, KV id, and R2 bucket name.
+
+3. Put secrets (do not commit them):
 
 ```sh
 npx wrangler secret put NUXT_ADMIN_PASSWORD_HASH

@@ -6,11 +6,6 @@ export type UserRecord = {
   schemaVersion: typeof SCHEMA_VERSION;
   id: string;
   name: string;
-  email?: string | null;
-  avatar?: string | null;
-  country?: string | null;
-  status?: string | null;
-  provider?: string | null;
   locale?: LocaleCode | null;
   davUsername?: string | null;
   davPassword?: string | null;

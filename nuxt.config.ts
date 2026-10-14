@@ -7,7 +7,14 @@ export default defineNuxtConfig({
     adminPasswordHash: "",
     bucketName: "files",
     session: {
+      password: "",
       maxAge: 60 * 60 * 24 * 30,
+      cookie: {
+        sameSite: "strict",
+      },
+    },
+    public: {
+      storageLimitGb: 10,
     },
   },
   routeRules: {

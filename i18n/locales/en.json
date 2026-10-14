@@ -1,9 +1,7 @@
 {
   "common": {
-    "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
-    "close": "Close",
     "confirm": "Confirm",
     "submit": "Submit",
     "update": "Update",
@@ -12,13 +10,10 @@
     "new": "New",
     "error": "Error",
     "success": "Success",
-    "loading": "Loading",
-    "note": "Note",
     "selected": "{count} selected"
   },
   "navigation": {
     "home": "Home",
-    "files": "Files",
     "settings": "Settings",
     "recent": "Recent",
     "favorites": "Favorites",
@@ -44,8 +39,7 @@
     "signIn": "Sign In",
     "password": "Password",
     "passwordPlaceholder": "Enter password",
-    "logout": "Logout",
-    "sessionExpired": "Session expired"
+    "logout": "Logout"
   },
   "file": {
     "upload": "Upload file",
@@ -71,9 +65,6 @@
     "type": "Type"
   },
   "folder": {
-    "create": "New Folder",
-    "rename": "Rename folder",
-    "delete": "Delete folder",
     "newFolder": "New Folder"
   },
   "bucket": {
@@ -101,8 +92,7 @@
     "fileType": "File Type",
     "visibility": "Visibility",
     "public": "public",
-    "private": "private",
-    "inherit": "inherit"
+    "private": "private"
   },
   "move": {
     "title": "Move {name} {type}",
@@ -125,7 +115,6 @@
     "visibility": "Visibility",
     "domain": "Domain",
     "domainPlaceholder": "Enter Domain",
-    "confirm": "Confirm",
     "websiteHint": "If you want to publish as a website, set a domain for it."
   },
   "upload": {
@@ -135,7 +124,6 @@
     "folder": "Upload Folder"
   },
   "create": {
-    "title": "Create {type}",
     "description": "Create a new {type}",
     "nameRequired": "Name is required",
     "needExtension": "File name must include extension",
@@ -153,24 +141,16 @@
     "davUsernameRequired": "Username is required",
     "davPassword": "WebDAV password",
     "davPasswordShort": "Password must be at least 8 characters",
-    "davPasswordKeep": "Leave blank to keep current password",
-    "saveDav": "Save WebDAV password",
-    "davEnabled": "WebDAV password is set",
-    "davDisabled": "WebDAV password is not set"
+    "saveDav": "Save WebDAV password"
   },
   "usage": {
     "storage": "Storage Usage",
     "usedOf": "{used} of {limit} used"
   },
   "errors": {
-    "notFound": "Resource not found",
-    "uploadFailed": "Upload failed",
-    "deleteFailed": "Delete failed",
-    "permission": "Permission error",
     "fileNotFound": "File not found",
     "folderNotFound": "Folder not found",
     "bucketNotFound": "Bucket not found",
-    "network": "Network error",
     "generic": "An error occurred. Please try again.",
     "unauthorized": "Unauthorized",
     "invalidPath": "Invalid Path",
@@ -181,7 +161,6 @@
     "cantMove": "Can't move item",
     "cantCopy": "Can't make copy",
     "cantDelete": "Can't delete item",
-    "forbidden": "Forbidden",
     "invalidPassword": "Invalid password",
     "tooManyAttempts": "Too many attempts. Try again in 15 minutes.",
     "passwordNotConfigured": "Admin password is not configured"

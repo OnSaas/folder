@@ -146,7 +146,7 @@ ${etag}
 
 export async function resolveDavUser(username: string, password: string) {
   const user = await userRepository.getByDavUsername(username);
-  if (!user || (user.status && user.status !== "active")) return null;
+  if (!user) return null;
   if (user.davPassword) {
     if (!timingSafeEqual(password, user.davPassword)) return null;
   } else if (user.davPasswordHash) {

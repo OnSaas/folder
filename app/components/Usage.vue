@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const { bucket } = useBucket();
-const limit = 10 * 1000 * 1000 * 1000; // 10GB
+const config = useRuntimeConfig();
+const limit = (config.public.storageLimitGb as number) * 1000 * 1000 * 1000;
 const used = computed(() => {
   if (bucket.value && bucket.value.size) return bucket.value.size;
   else return 0;

@@ -28,6 +28,12 @@ writeFileSync(nitroPath, nitro);
 
 const wranglerSrc = join(root, "wrangler.jsonc");
 const wranglerDst = join(root, "dist/server/wrangler.jsonc");
+if (!existsSync(wranglerSrc)) {
+  console.error(
+    "请先复制 wrangler.example.jsonc 为 wrangler.jsonc 并填写配置"
+  );
+  process.exit(1);
+}
 const src = JSON.parse(
   readFileSync(wranglerSrc, "utf8").replace(/^\s*\/\/.*$/gm, "").replace(/,(\s*[}\]])/g, "$1")
 );

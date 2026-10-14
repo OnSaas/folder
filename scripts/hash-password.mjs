@@ -45,9 +45,13 @@ function promptHidden(question) {
   });
 }
 
-const password = (await promptHidden("Password: ")).trim();
+const password = await promptHidden("Password: ");
 if (!password) {
   console.error("Empty password");
+  process.exit(1);
+}
+if (password.length < 8) {
+  console.error("密码至少需要 8 位");
   process.exit(1);
 }
 const salt = randomBytes(16);

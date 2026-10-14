@@ -18,11 +18,6 @@ function toApiUser(user: UserRecord) {
   return {
     id: user.id,
     name: user.name,
-    email: user.email,
-    avatar: user.avatar,
-    country: user.country,
-    status: user.status,
-    provider: user.provider,
     locale: user.locale ?? null,
     createdAt: new Date(user.createdAt),
   };
@@ -82,10 +77,6 @@ export async function createUser(data: CreateUserType) {
   return userRepository.create({
     id: data.id,
     name: data.name,
-    email: data.email,
-    avatar: data.avatar,
-    provider: data.provider,
-    status: "active",
     createdAt: data.createdAt ? new Date(data.createdAt).getTime() : now,
   });
 }

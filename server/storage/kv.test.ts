@@ -17,12 +17,10 @@ describe("kv repositories", () => {
     const user = await userRepository.create({
       id: "u1",
       name: "Ada",
-      status: "active",
       locale: "zh-CN",
       createdAt: Date.now(),
     });
     assert.equal(user.schemaVersion, 1);
-    assert.equal(await kv.get(keys.userEmail("ada@example.com")), null);
     const updated = await userRepository.setLocale("u1", "en");
     assert.equal(updated?.locale, "en");
   });

@@ -59,7 +59,6 @@ export async function ensureOwnerAndBucket(): Promise<{
     user = await userRepository.create({
       id: ownerId,
       name: "Owner",
-      status: "active",
       createdAt: Date.now(),
     });
   }

@@ -1,9 +1,7 @@
 {
   "common": {
-    "save": "保存",
     "cancel": "取消",
     "delete": "删除",
-    "close": "关闭",
     "confirm": "确认",
     "submit": "提交",
     "update": "更新",
@@ -12,13 +10,10 @@
     "new": "新建",
     "error": "错误",
     "success": "成功",
-    "loading": "加载中",
-    "note": "注意",
     "selected": "已选 {count} 项"
   },
   "navigation": {
     "home": "首页",
-    "files": "文件",
     "settings": "设置",
     "recent": "最近",
     "favorites": "收藏",
@@ -44,8 +39,7 @@
     "signIn": "登录",
     "password": "密码",
     "passwordPlaceholder": "输入密码",
-    "logout": "退出",
-    "sessionExpired": "登录已过期"
+    "logout": "退出"
   },
   "file": {
     "upload": "上传文件",
@@ -71,9 +65,6 @@
     "type": "类型"
   },
   "folder": {
-    "create": "新建文件夹",
-    "rename": "重命名文件夹",
-    "delete": "删除文件夹",
     "newFolder": "新建文件夹"
   },
   "bucket": {
@@ -101,8 +92,7 @@
     "fileType": "文件类型",
     "visibility": "可见性",
     "public": "公开",
-    "private": "私有",
-    "inherit": "继承"
+    "private": "私有"
   },
   "move": {
     "title": "移动 {name} {type}",
@@ -125,7 +115,6 @@
     "visibility": "可见性",
     "domain": "域名",
     "domainPlaceholder": "输入域名",
-    "confirm": "确认",
     "websiteHint": "如果要发布为网站，请设置域名。"
   },
   "upload": {
@@ -135,7 +124,6 @@
     "folder": "上传文件夹"
   },
   "create": {
-    "title": "新建 {type}",
     "description": "新建一个 {type}",
     "nameRequired": "名称必填",
     "needExtension": "文件名必须包含扩展名",
@@ -153,24 +141,16 @@
     "davUsernameRequired": "请填写用户名",
     "davPassword": "WebDAV 密码",
     "davPasswordShort": "密码至少 8 位",
-    "davPasswordKeep": "留空则不改当前密码",
-    "saveDav": "保存 WebDAV 密码",
-    "davEnabled": "已设置 WebDAV 密码",
-    "davDisabled": "尚未设置 WebDAV 密码"
+    "saveDav": "保存 WebDAV 密码"
   },
   "usage": {
     "storage": "存储用量",
     "usedOf": "已用 {used} / {limit}"
   },
   "errors": {
-    "notFound": "资源不存在",
-    "uploadFailed": "上传失败",
-    "deleteFailed": "删除失败",
-    "permission": "权限错误",
     "fileNotFound": "文件不存在",
     "folderNotFound": "文件夹不存在",
     "bucketNotFound": "存储桶不存在",
-    "network": "网络错误",
     "generic": "出错了，请重试。",
     "unauthorized": "未授权",
     "invalidPath": "无效路径",
@@ -181,7 +161,6 @@
     "cantMove": "无法移动",
     "cantCopy": "无法复制",
     "cantDelete": "无法删除",
-    "forbidden": "禁止访问",
     "invalidPassword": "密码错误",
     "tooManyAttempts": "尝试次数过多，请 15 分钟后再试。",
     "passwordNotConfigured": "未配置管理员密码"
