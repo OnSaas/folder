@@ -18,9 +18,9 @@ jobs:
 
       - name: Install
         run: |
-          npm config set fetch-timeout 600000
-          npm config set fetch-retries 5
-          npm ci --ignore-scripts --omit=optional --no-audit --no-fund
+          if [ -f .npmrc ]; then mv .npmrc .npmrc.pnpm; fi
+          npm ci --ignore-scripts --no-audit --no-fund
+          if [ -f .npmrc.pnpm ]; then mv .npmrc.pnpm .npmrc; fi
 
       - name: Prepare
         run: npx nuxt prepare
