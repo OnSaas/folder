@@ -1,0 +1,60 @@
+name: Deploy Worker
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm test
+
+      - name: Write wrangler.jsonc
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_KV_NAMESPACE_ID }}
+          CLOUDFLARE_R2_BUCKET_NAME: ${{ secrets.CLOUDFLARE_R2_BUCKET_NAME }}
+        run: |
+          node --input-type=module << 'JS'
+          import { writeFileSync } from "node:fs";
+          const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || "";
+          const kvId = process.env.CLOUDFLARE_KV_NAMESPACE_ID || "";
+          const bucket = process.env.CLOUDFLARE_R2_BUCKET_NAME || "";
+          if (!accountId || !kvId || !bucket) {
+            console.error("缺少 CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_KV_NAMESPACE_ID / CLOUDFLARE_R2_BUCKET_NAME");
+            process.exit(1);
+          }
+          const config = {
+            $schema: "node_modules/wrangler/config-schema.json",
+            name: "folder",
+            account_id: accountId,
+            main: "./dist/server/index.mjs",
+            compatibility_date: "2025-03-10",
+            compatibility_flags: ["nodejs_compat"],
+            observability: { enabled: true },
+            kv_namespaces: [{ binding: "KV", id: kvId }],
+            r2_buckets: [{ binding: "BLOB", bucket_name: bucket }],
+            assets: { binding: "ASSETS", directory: "./dist/public" },
+            routes: [{ pattern: "box.oonn.me", custom_domain: true }],
+          };
+          writeFileSync("wrangler.jsonc", JSON.stringify(config, null, 2) + "\n");
+          JS
+
+      - name: Deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: npm run deploy
