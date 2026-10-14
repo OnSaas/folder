@@ -20,7 +20,9 @@ jobs:
         run: corepack enable && corepack prepare npm@10.9.7 --activate
 
       - name: Install
-        run: npm ci --ignore-scripts --no-audit --no-fund
+        run: |
+          npm config set maxsockets 1
+          npm install --ignore-scripts --no-audit --no-fund
 
       - name: Prepare
         run: npx nuxt prepare
