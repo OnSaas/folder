@@ -9,15 +9,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    env:
-      NODE_OPTIONS: --max-old-space-size=4096
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
+
+      - name: Pin npm
+        run: corepack enable && corepack prepare npm@10.9.7 --activate
 
       - name: Install
         run: npm ci --ignore-scripts --no-audit --no-fund
