@@ -141,7 +141,17 @@
     "davUsernameRequired": "请填写用户名",
     "davPassword": "WebDAV 密码",
     "davPasswordShort": "密码至少 8 位",
-    "saveDav": "保存 WebDAV 密码"
+    "saveDav": "保存 WebDAV 密码",
+    "copy": "复制",
+    "copied": "已复制",
+    "davPrimary": "WebDAV 地址",
+    "davAlias": "备用地址",
+    "davExamples": "连接示例",
+    "davExampleWindows": "资源管理器 → 映射网络驱动器 → 文件夹：{url}",
+    "davExampleMac": "Finder → 前往 → 连接服务器（⌘K）→ {url}",
+    "davExampleWindowsTitle": "Windows",
+    "davExampleMacTitle": "macOS",
+    "davExampleRcloneTitle": "rclone"
   },
   "usage": {
     "storage": "存储用量",

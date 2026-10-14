@@ -141,7 +141,17 @@
     "davUsernameRequired": "Username is required",
     "davPassword": "WebDAV password",
     "davPasswordShort": "Password must be at least 8 characters",
-    "saveDav": "Save WebDAV password"
+    "saveDav": "Save WebDAV password",
+    "copy": "Copy",
+    "copied": "Copied",
+    "davPrimary": "WebDAV URL",
+    "davAlias": "Alternate URL",
+    "davExamples": "Connection examples",
+    "davExampleWindows": "File Explorer → Map network drive → Folder: {url}",
+    "davExampleMac": "Finder → Go → Connect to Server (⌘K) → {url}",
+    "davExampleWindowsTitle": "Windows",
+    "davExampleMacTitle": "macOS",
+    "davExampleRcloneTitle": "rclone"
   },
   "usage": {
     "storage": "Storage Usage",
