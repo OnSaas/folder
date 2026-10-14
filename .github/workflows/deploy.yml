@@ -20,7 +20,10 @@ jobs:
           cache: npm
 
       - name: Install
-        run: npm ci --no-audit --no-fund || npm ci --no-audit --no-fund
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Prepare
+        run: npx nuxt prepare
 
       - run: npm test
 
