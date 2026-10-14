@@ -28,7 +28,7 @@ const persist = async (code: "en" | "zh-CN") => {
     :items="options"
     :aria-label="t('language.label')"
     size="sm"
-    class="w-28"
+    class="w-20 sm:w-28"
     @update:model-value="persist"
   />
 </template>

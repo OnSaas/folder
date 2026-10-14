@@ -60,9 +60,9 @@ const groups = computed(() => [
       :label="$t('header.search')"
       icon="lucide:search"
       variant="outline"
-      class="sm:grow my-2 mx-auto max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl cursor-text"
+      class="w-full min-w-0 my-2 mx-auto max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl cursor-text"
     >
-      <template #trailing> <UKbd class="ml-auto">⌘+K</UKbd></template>
+      <template #trailing> <UKbd class="ml-auto hidden sm:inline-flex">⌘+K</UKbd></template>
     </UButton>
     <template #content>
       <UCommandPalette
