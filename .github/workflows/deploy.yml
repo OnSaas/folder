@@ -41,12 +41,16 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_KV_NAMESPACE_ID: ${{ secrets.CLOUDFLARE_KV_NAMESPACE_ID }}
           CLOUDFLARE_R2_BUCKET_NAME: ${{ secrets.CLOUDFLARE_R2_BUCKET_NAME }}
+          CLOUDFLARE_CUSTOM_DOMAIN: ${{ vars.CLOUDFLARE_CUSTOM_DOMAIN }}
+          CLOUDFLARE_CRON: ${{ vars.CLOUDFLARE_CRON }}
         run: |
           node --input-type=module << 'JS'
           import { writeFileSync } from "node:fs";
           const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || "";
           const kvId = process.env.CLOUDFLARE_KV_NAMESPACE_ID || "";
           const bucket = process.env.CLOUDFLARE_R2_BUCKET_NAME || "";
+          const domain = process.env.CLOUDFLARE_CUSTOM_DOMAIN || "";
+          const cron = process.env.CLOUDFLARE_CRON || "";
           if (!accountId || !kvId || !bucket) {
             console.error("缺少 CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_KV_NAMESPACE_ID / CLOUDFLARE_R2_BUCKET_NAME");
             process.exit(1);
@@ -62,9 +66,11 @@ jobs:
             kv_namespaces: [{ binding: "KV", id: kvId }],
             r2_buckets: [{ binding: "BLOB", bucket_name: bucket }],
             assets: { binding: "ASSETS", directory: "./dist/public" },
-            routes: [{ pattern: "box.oonn.me", custom_domain: true }],
-            triggers: { crons: ["* * * * *"] },
           };
+          if (domain) config.routes = [{ pattern: domain, custom_domain: true }];
+          // Cron triggers are opt-in: the Workers Free plan allows 5 per account,
+          // so set the CLOUDFLARE_CRON repo variable only when one is free.
+          if (cron) config.triggers = { crons: [cron] };
           writeFileSync("wrangler.jsonc", JSON.stringify(config, null, 2) + "\n");
           JS
 

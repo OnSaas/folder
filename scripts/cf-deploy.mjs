@@ -56,9 +56,11 @@ const out = {
   kv_namespaces: src.kv_namespaces,
   r2_buckets: src.r2_buckets,
   routes: src.routes,
-  triggers: src.triggers,
   assets: { binding: "ASSETS", directory: "../public" },
 };
+// Cron triggers are opt-in: the Workers Free plan caps an account at 5 cron
+// triggers and rejects the deploy when any extra schedule is declared.
+if (src.triggers) out.triggers = src.triggers;
 writeFileSync(wranglerDst, JSON.stringify(out, null, 2) + "\n");
 
 if (src.account_id) process.env.CLOUDFLARE_ACCOUNT_ID = src.account_id;

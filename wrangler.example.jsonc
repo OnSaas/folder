@@ -24,6 +24,13 @@
     "binding": "ASSETS",
     "directory": "./dist/public"
   },
+  "routes": [
+    {
+      "pattern": "<custom-domain>",
+      "custom_domain": true
+    }
+  ],
+  "//triggers": "Workers Free allows 5 cron triggers per account; add triggers.crons only if one is free.",
   "triggers": {
     "crons": ["* * * * *"]
   }
