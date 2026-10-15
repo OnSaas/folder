@@ -13,6 +13,13 @@ const editing = ref<any>({
   accessKeyId: "",
   secretAccessKey: "",
   forcePathStyle: true,
+  username: "",
+  password: "",
+  rootPrefix: "",
+  clientId: "",
+  clientSecret: "",
+  refreshToken: "",
+  rootFolderId: "",
 });
 const saving = ref(false);
 
@@ -26,9 +33,17 @@ const templates: Record<string, { endpoint: string; region: string }> = {
   cos: { endpoint: "https://cos.ap-guangzhou.myqcloud.com", region: "ap-guangzhou" },
 };
 
+const types = [
+  { label: t("settings.typeS3"), value: "s3" },
+  { label: t("settings.typeWebdav"), value: "webdav" },
+  { label: t("settings.typeOnedrive"), value: "onedrive" },
+  { label: t("settings.typeGdrive"), value: "gdrive" },
+];
+
 watch(
   () => editing.value.template,
   (name) => {
+    if (editing.value.type !== "s3") return;
     const preset = templates[name];
     if (!preset) return;
     editing.value.endpoint = preset.endpoint;
@@ -105,15 +120,36 @@ const remove = async (id: string) => {
       <p class="font-medium">{{ t("settings.addStorage") }}</p>
       <UInput v-model="editing.name" :placeholder="t('settings.addStorage')" />
       <UInput v-model="editing.mountPath" :placeholder="t('settings.mountPath')" />
-      <USelect
-        v-model="editing.template"
-        :items="Object.keys(templates).map((key) => ({ label: key, value: key }))"
-      />
-      <UInput v-model="editing.endpoint" :placeholder="t('settings.endpoint')" />
-      <UInput v-model="editing.region" :placeholder="t('settings.region')" />
-      <UInput v-model="editing.bucket" :placeholder="t('settings.bucketName')" />
-      <UInput v-model="editing.accessKeyId" :placeholder="t('settings.accessKey')" autocomplete="off" />
-      <UInput v-model="editing.secretAccessKey" :placeholder="t('settings.secretKey')" autocomplete="off" />
+      <USelect v-model="editing.type" :items="types" />
+      <template v-if="editing.type === 's3'">
+        <USelect
+          v-model="editing.template"
+          :items="Object.keys(templates).map((key) => ({ label: key, value: key }))"
+        />
+        <UInput v-model="editing.endpoint" :placeholder="t('settings.endpoint')" />
+        <UInput v-model="editing.region" :placeholder="t('settings.region')" />
+        <UInput v-model="editing.bucket" :placeholder="t('settings.bucketName')" />
+        <UInput v-model="editing.accessKeyId" :placeholder="t('settings.accessKey')" autocomplete="off" />
+        <UInput v-model="editing.secretAccessKey" :placeholder="t('settings.secretKey')" autocomplete="off" />
+      </template>
+      <template v-else-if="editing.type === 'webdav'">
+        <UInput v-model="editing.endpoint" :placeholder="t('settings.endpoint')" />
+        <UInput v-model="editing.username" :placeholder="t('settings.username')" autocomplete="off" />
+        <UInput v-model="editing.password" :placeholder="t('settings.davPassword')" autocomplete="off" />
+        <UInput v-model="editing.rootPrefix" :placeholder="t('settings.rootPrefix')" />
+      </template>
+      <template v-else>
+        <p class="text-sm opacity-70">{{ t("settings.oauthHint") }}</p>
+        <UInput v-model="editing.clientId" :placeholder="t('settings.clientId')" autocomplete="off" />
+        <UInput v-model="editing.clientSecret" :placeholder="t('settings.clientSecret')" autocomplete="off" />
+        <UInput v-model="editing.refreshToken" :placeholder="t('settings.refreshToken')" autocomplete="off" />
+        <UInput v-model="editing.rootPrefix" :placeholder="t('settings.rootPrefix')" />
+        <UInput
+          v-if="editing.type === 'gdrive'"
+          v-model="editing.rootFolderId"
+          :placeholder="t('settings.rootFolderId')"
+        />
+      </template>
       <UButton :loading="saving" @click="save">{{ t("common.submit") }}</UButton>
     </div>
   </div>

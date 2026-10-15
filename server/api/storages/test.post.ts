@@ -1,7 +1,7 @@
-import { buildS3Driver } from "~~/server/utils/storages";
+import { buildProbeDriver } from "~~/server/utils/storages";
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  const driver = await buildS3Driver(body);
+  const driver = await buildProbeDriver(body);
   return driver.test();
 });

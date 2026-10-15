@@ -187,7 +187,18 @@
     "syncManual": "手动",
     "syncInterval": "间隔",
     "syncEveryMinutes": "每 N 分钟",
-    "syncExcludes": "排除规则，逗号分隔"
+    "syncExcludes": "排除规则，逗号分隔",
+    "typeS3": "S3 兼容",
+    "typeWebdav": "WebDAV",
+    "typeOnedrive": "OneDrive",
+    "typeGdrive": "Google Drive",
+    "username": "用户名",
+    "rootPrefix": "根前缀",
+    "clientId": "Client ID",
+    "clientSecret": "Client secret",
+    "refreshToken": "Refresh token",
+    "rootFolderId": "根目录 ID",
+    "oauthHint": "填自己 OAuth 应用的 refresh token。密钥加密保存，GET 不会回传。"
   },
   "usage": {
     "storage": "存储用量",
