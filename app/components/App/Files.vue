@@ -15,7 +15,7 @@ const { openRename } = useRename();
 const { openMove } = useMove();
 const { openCopy } = useCopy();
 const { deleteFiles, deleting, downloadFile } = useFileActions();
-const view = useState<string>("view", () => "grid");
+const view = useCookie<string>("folder_view", { default: () => "grid" });
 const toast = useToast();
 const { t } = useI18n();
 

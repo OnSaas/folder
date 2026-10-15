@@ -34,7 +34,14 @@
 | `CLOUDFLARE_KV_NAMESPACE_ID` | KV 绑定 |
 | `CLOUDFLARE_R2_BUCKET_NAME` | R2 桶名 |
 
-自定义域 `box.oonn.me` 写在工作流里，不是新绑的域。
+自定义域 `box.oonn.me` 由仓库变量 `CLOUDFLARE_CUSTOM_DOMAIN` 控制，不是新绑的域。
+
+### 仓库变量
+
+| 名称 | 用途 |
+|---|---|
+| `CLOUDFLARE_CUSTOM_DOMAIN` | 自定义域，留空就不绑 |
+| `CLOUDFLARE_CRON` | 定时触发（如 `* * * * *`）。**Workers 免费版每账号只有 5 个 cron，满了别设**，否则 wrangler 会报 `code: 10072` 并让部署失败 |
 
 ### Worker secret
 
@@ -46,6 +53,23 @@ npx wrangler secret put NUXT_ADMIN_PASSWORD_HASH
 ```
 
 `NUXT_SESSION_PASSWORD` 至少 32 位。改登录哈希后旧会话失效。可选 `NUXT_BUCKET_NAME`，默认 `files`。
+
+外部存储的凭据建议单独设 `NUXT_STORAGE_SECRET`（≥32 位）：
+
+```sh
+npx wrangler secret put NUXT_STORAGE_SECRET
+```
+
+没设会回退用会话密钥，换会话密钥会让已存的第三方凭据失效。
+
+## 外部存储与备份
+
+设置 → 存储可以加 S3 兼容（AWS / B2 / R2 / Wasabi / MinIO / OSS / COS）、WebDAV、OneDrive、Google Drive 四类。凭据用 AES-GCM 加密存 KV，`GET /api/storages` 只回 `hasSecret`，不回密钥。加过的存储会出现在侧栏「存储」分组。
+
+设置 → 备份可以做主存储到外部存储的单向同步，支持增量 / 全量、冲突策略、排除规则、手动 / 间隔 / cron 计划。默认删除策略是 keep，目标端不会被动。
+
+定时同步依赖 Worker cron 触发器。免费版本账号只有 5 个配额，用满就只能手动跑「立即运行」。
+
 
 ## 本地
 
