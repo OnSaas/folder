@@ -10,7 +10,8 @@
     "new": "新建",
     "error": "错误",
     "success": "成功",
-    "selected": "已选 {count} 项"
+    "selected": "已选 {count} 项",
+    "copy": "复制"
   },
   "navigation": {
     "home": "首页",
@@ -18,7 +19,12 @@
     "recent": "最近",
     "favorites": "收藏",
     "published": "已发布",
-    "trash": "回收站"
+    "trash": "回收站",
+    "groupFiles": "文件",
+    "groupStorage": "存储",
+    "groupSync": "同步",
+    "groupSystem": "系统",
+    "sync": "备份"
   },
   "pages": {
     "recent": "最近添加或修改",
@@ -62,7 +68,10 @@
     "visibility": "可见性",
     "addedOn": "添加时间",
     "modifiedOn": "修改时间",
-    "type": "类型"
+    "type": "类型",
+    "copyTo": "复制到",
+    "copyToStorage": "复制到存储",
+    "pasteHere": "粘贴到此处"
   },
   "folder": {
     "newFolder": "新建文件夹"
@@ -121,7 +130,14 @@
     "drop": "把文件拖到这里",
     "progress": "总体进度",
     "files": "上传文件",
-    "folder": "上传文件夹"
+    "folder": "上传文件夹",
+    "queue": "上传队列",
+    "collapse": "收起",
+    "expand": "展开",
+    "clear": "清除已完成",
+    "target": "目标",
+    "failed": "失败",
+    "noItems": "暂无上传"
   },
   "create": {
     "description": "新建一个 {type}",
@@ -198,7 +214,28 @@
     "clientSecret": "Client secret",
     "refreshToken": "Refresh token",
     "rootFolderId": "根目录 ID",
-    "oauthHint": "填自己 OAuth 应用的 refresh token。密钥加密保存，GET 不会回传。"
+    "oauthHint": "填自己 OAuth 应用的 refresh token。密钥加密保存，GET 不会回传。",
+    "general": "通用",
+    "sectionGeneral": "通用",
+    "sectionDav": "WebDAV",
+    "sectionStorage": "存储",
+    "sectionSync": "备份",
+    "syncNext": "下次运行",
+    "syncHistory": "运行历史",
+    "syncNoRuns": "还没有运行记录",
+    "syncStats": "复制 {copied} / 跳过 {skipped} / 失败 {failed}",
+    "syncIncremental": "增量",
+    "syncFull": "全量",
+    "syncKeep": "保留目标端文件",
+    "syncTrash": "删除的文件移到回收目录",
+    "syncMirror": "镜像（删除多余文件）",
+    "syncMirrorWarn": "镜像会删除目标端不在源里的文件，无法撤销。",
+    "syncNewer": "新文件覆盖",
+    "syncOverwrite": "总是覆盖",
+    "syncSkip": "跳过已存在",
+    "syncCron": "Cron 表达式",
+    "syncCronExpr": "例如 0 3 * * *",
+    "syncTimezone": "时区（例如 Asia/Shanghai）"
   },
   "usage": {
     "storage": "存储用量",
@@ -221,5 +258,22 @@
     "invalidPassword": "密码错误",
     "tooManyAttempts": "尝试次数过多，请 15 分钟后再试。",
     "passwordNotConfigured": "未配置管理员密码"
+  },
+  "theme": {
+    "label": "主题",
+    "light": "浅色",
+    "dark": "深色",
+    "system": "跟随系统"
+  },
+  "mount": {
+    "rename": "重命名",
+    "move": "移动",
+    "copy": "复制",
+    "targetPath": "目标路径",
+    "newName": "新名称",
+    "copied": "已复制",
+    "moved": "已移动",
+    "renamed": "已重命名",
+    "readOnlyHint": "该挂载为只读。"
   }
 }

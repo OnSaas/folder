@@ -6,22 +6,35 @@ const { file, dir, selected } = defineProps<{
   selected: boolean;
 }>();
 const emit = defineEmits(["select", "open", "delete"]);
+const { selected: selectedIds } = useSelected();
+const { start, clear: clearDrag } = useDragDrop();
 const summary = computed(() => {
   let text = file.type;
   if (file.size) text += " / " + formatBytes(file.size as number);
   if (file.dimensions) text += " / " + file.dimensions;
   return text;
 });
+
+const onDragStart = (event: DragEvent) => {
+  if (file.deletedAt) return;
+  const ids = selectedIds.value.includes(file.id) ? [...selectedIds.value] : [file.id];
+  start(ids);
+  event.dataTransfer?.setData("text/plain", file.id);
+  if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
+};
 </script>
 <template>
   <FileMenu :file="file" @delete="emit('delete')">
     <div
+      :draggable="!file.deletedAt"
       :class="[
         'flex w-full shadow shadow-neutral-400/20 dark:shadow-neutral-800/20',
         dir === 'row' ? 'flex-row' : 'flex-col',
       ]"
-      @click.stop="!file.deletedAt && emit('select', file.id)"
+      @click.stop="!file.deletedAt && emit('select', file.id, $event)"
       @dblclick="!file.deletedAt && emit('open', file.id)"
+      @dragstart="onDragStart"
+      @dragend="clearDrag"
     >
       <div
         :class="[

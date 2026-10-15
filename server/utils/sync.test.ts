@@ -35,6 +35,24 @@ describe("sync match", () => {
     assert.equal(cronMatches("5 * * * *", date), false);
   });
 
+  it("matches cron in a named timezone", () => {
+    // 2026-01-01T00:30Z is 08:30 in Asia/Shanghai.
+    const date = new Date(Date.UTC(2026, 0, 1, 0, 30, 0));
+    assert.equal(cronMatches("30 8 * * *", date, "Asia/Shanghai"), true);
+    assert.equal(cronMatches("30 0 * * *", date, "Asia/Shanghai"), false);
+    assert.equal(cronMatches("30 0 * * *", date, "UTC"), true);
+  });
+
+  it("computes the next cron run in a timezone", () => {
+    const from = Date.UTC(2026, 0, 1, 0, 0, 0);
+    const next = nextRunAt(
+      { kind: "cron", expr: "0 3 * * *", tz: "Asia/Shanghai" },
+      from
+    );
+    assert.ok(next);
+    assert.equal(new Date(next!).toISOString(), "2026-01-01T19:00:00.000Z");
+  });
+
   it("computes interval next run", () => {
     assert.equal(nextRunAt({ kind: "interval", everyMinutes: 15 }, 1_000), 1_000 + 15 * 60_000);
     assert.equal(nextRunAt({ kind: "manual" }, 1_000), undefined);

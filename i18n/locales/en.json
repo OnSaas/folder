@@ -10,7 +10,8 @@
     "new": "New",
     "error": "Error",
     "success": "Success",
-    "selected": "{count} selected"
+    "selected": "{count} selected",
+    "copy": "Copy"
   },
   "navigation": {
     "home": "Home",
@@ -18,7 +19,12 @@
     "recent": "Recent",
     "favorites": "Favorites",
     "published": "Published",
-    "trash": "Trash"
+    "trash": "Trash",
+    "groupFiles": "Files",
+    "groupStorage": "Storage",
+    "groupSync": "Sync",
+    "groupSystem": "System",
+    "sync": "Backup"
   },
   "pages": {
     "recent": "Recently Added or Modified",
@@ -62,7 +68,10 @@
     "visibility": "Visibility",
     "addedOn": "Added On",
     "modifiedOn": "Modified On",
-    "type": "Type"
+    "type": "Type",
+    "copyTo": "Copy to",
+    "copyToStorage": "Copy to storage",
+    "pasteHere": "Paste here"
   },
   "folder": {
     "newFolder": "New Folder"
@@ -121,7 +130,14 @@
     "drop": "Drop files here",
     "progress": "Overall Progress",
     "files": "Upload Files",
-    "folder": "Upload Folder"
+    "folder": "Upload Folder",
+    "queue": "Uploads",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "clear": "Clear finished",
+    "target": "Target",
+    "failed": "Failed",
+    "noItems": "No uploads"
   },
   "create": {
     "description": "Create a new {type}",
@@ -198,7 +214,28 @@
     "clientSecret": "Client secret",
     "refreshToken": "Refresh token",
     "rootFolderId": "Root folder ID",
-    "oauthHint": "Paste a refresh token from your own OAuth app. Client secret is stored encrypted; GET never returns it."
+    "oauthHint": "Paste a refresh token from your own OAuth app. Client secret is stored encrypted; GET never returns it.",
+    "general": "General",
+    "sectionGeneral": "General",
+    "sectionDav": "WebDAV",
+    "sectionStorage": "Storage",
+    "sectionSync": "Backup",
+    "syncNext": "Next run",
+    "syncHistory": "History",
+    "syncNoRuns": "No runs yet",
+    "syncStats": "copied {copied} / skipped {skipped} / failed {failed}",
+    "syncIncremental": "Incremental",
+    "syncFull": "Full",
+    "syncKeep": "Keep destination files",
+    "syncTrash": "Move removed files to trash",
+    "syncMirror": "Mirror (delete extras)",
+    "syncMirrorWarn": "Mirror deletes files at the destination that are not in the source. This cannot be undone.",
+    "syncNewer": "Newer wins",
+    "syncOverwrite": "Always overwrite",
+    "syncSkip": "Skip existing",
+    "syncCron": "Cron expression",
+    "syncCronExpr": "e.g. 0 3 * * *",
+    "syncTimezone": "Timezone (e.g. Asia/Shanghai)"
   },
   "usage": {
     "storage": "Storage Usage",
@@ -221,5 +258,22 @@
     "invalidPassword": "Invalid password",
     "tooManyAttempts": "Too many attempts. Try again in 15 minutes.",
     "passwordNotConfigured": "Admin password is not configured"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "mount": {
+    "rename": "Rename",
+    "move": "Move",
+    "copy": "Copy",
+    "targetPath": "Target path",
+    "newName": "New name",
+    "copied": "Copied",
+    "moved": "Moved",
+    "renamed": "Renamed",
+    "readOnlyHint": "This mount is read-only."
   }
 }

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 defineProps<{
   title?: string;
+  crumbs?: { label: string; to: string }[];
+  badge?: string;
 }>();
 </script>
 <template>
   <div class="flex flex-col gap-6 pb-48">
-    <FileBreadcrumb />
+    <FileBreadcrumb :crumbs="crumbs" :badge="badge" />
     <div class="flex justify-start items-center flex-wrap gap-4 w-full">
       <h2
         v-if="title"

@@ -1,12 +1,6 @@
-<script setup>
+<script setup lang="ts">
 const route = useRoute();
-const { aside, toggle, close } = useAside();
-defineShortcuts({
-  meta_b: toggle,
-  escape: () => {
-    if (aside.value) close();
-  },
-});
+const { aside, toggle } = useAside();
 </script>
 <template>
   <header
@@ -35,8 +29,6 @@ defineShortcuts({
     </div>
     <div v-else class="grow"></div>
     <div class="flex items-center gap-1 sm:gap-2 shrink-0">
-      <LanguageSwitcher />
-      <ColorMode />
       <ProfileMenu />
     </div>
   </header>

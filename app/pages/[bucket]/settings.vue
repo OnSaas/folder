@@ -3,6 +3,26 @@ const { t } = useI18n();
 const route = useRoute();
 useSeoMeta({ title: t("settings.title") });
 
+const sections = computed(() => [
+  { key: "general", label: t("settings.sectionGeneral"), icon: "lucide:settings-2" },
+  { key: "dav", label: t("settings.sectionDav"), icon: "lucide:plug" },
+  { key: "storage", label: t("settings.sectionStorage"), icon: "lucide:hard-drive" },
+  { key: "sync", label: t("settings.sectionSync"), icon: "lucide:refresh-cw" },
+]);
+
+const active = ref("general");
+const applyHash = () => {
+  const hash = (route.hash || "").replace(/^#/, "");
+  if (hash && sections.value.some((section) => section.key === hash)) active.value = hash;
+};
+onMounted(applyHash);
+watch(() => route.hash, applyHash);
+
+const select = (key: string) => {
+  active.value = key;
+  navigateTo({ hash: `#${key}` }, { replace: true });
+};
+
 const username = ref("");
 const password = ref("");
 const saving = ref(false);
@@ -27,9 +47,7 @@ const rcloneSnippet = computed(
   () =>
     `[folder]\ntype = webdav\nurl = ${davUrl.value}\nvendor = other\nuser = ${username.value || "<username>"}\npass = <password>`
 );
-const windowsHint = computed(
-  () => t("settings.davExampleWindows", { url: davUrl.value })
-);
+const windowsHint = computed(() => t("settings.davExampleWindows", { url: davUrl.value }));
 const macHint = computed(() => t("settings.davExampleMac", { url: davUrl.value }));
 
 const { data: dav, refresh } = await useFetch("/api/user/dav");
@@ -118,69 +136,118 @@ const saveDav = async () => {
 </script>
 <template>
   <AppMain :title="t('settings.title')">
-    <div class="flex flex-col gap-8 max-w-lg min-w-0">
-      <UFormField :label="t('settings.language')">
-        <LanguageSwitcher />
-      </UFormField>
-      <div class="flex flex-col gap-4 min-w-0">
-        <h3 class="text-lg font-light">{{ t("settings.dav") }}</h3>
-        <p class="text-sm opacity-70">{{ t("settings.davHint") }}</p>
-        <CopyField :label="t('settings.davPrimary')" :value="davUrl" />
-        <CopyField :label="t('settings.davAlias')" :value="webdavUrl" />
-        <UFormField :label="t('settings.davUsername')">
-          <UInput v-model="username" autocomplete="off" class="w-full">
-            <template #trailing>
-              <UButton
-                :icon="copiedUser ? 'lucide:check' : 'lucide:copy'"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                :aria-label="t('settings.copy')"
-                @click="copyUsername"
-              />
-            </template>
-          </UInput>
-        </UFormField>
-        <UFormField :label="t('settings.davPassword')" :error="error">
-          <UInput v-model="password" type="text" autocomplete="off" class="w-full">
-            <template #trailing>
-              <UButton
-                :icon="copiedPass ? 'lucide:check' : 'lucide:copy'"
-                color="neutral"
-                variant="ghost"
-                size="xs"
-                :aria-label="t('settings.copy')"
-                @click="copyPassword"
-              />
-            </template>
-          </UInput>
-        </UFormField>
-        <div class="flex items-center gap-4">
-          <UButton color="primary" variant="solid" :loading="saving" @click="saveDav">
-            {{ t("settings.saveDav") }}
-          </UButton>
-          <p v-if="saved" class="text-sm">{{ t("common.success") }}</p>
+    <div class="flex flex-col gap-8 min-w-0 md:flex-row md:gap-10">
+      <nav class="shrink-0 md:w-44">
+        <div class="hidden flex-col gap-1 md:flex">
+          <button
+            v-for="section in sections"
+            :key="section.key"
+            :class="[
+              'flex items-center gap-2 px-3 py-2 text-sm text-left',
+              active === section.key
+                ? 'bg-neutral-200/70 dark:bg-neutral-800 font-medium'
+                : 'hover:bg-neutral-200/40 dark:hover:bg-neutral-800/50',
+            ]"
+            @click="select(section.key)"
+          >
+            <Icon :name="section.icon" class="size-4 opacity-70" />
+            {{ section.label }}
+          </button>
         </div>
-        <details class="text-sm">
-          <summary class="cursor-pointer opacity-80">{{ t("settings.davExamples") }}</summary>
-          <div class="mt-3 flex flex-col gap-3 min-w-0">
-            <div>
-              <p class="font-medium">{{ t("settings.davExampleWindowsTitle") }}</p>
-              <p class="font-mono text-xs break-all opacity-80">{{ windowsHint }}</p>
-            </div>
-            <div>
-              <p class="font-medium">{{ t("settings.davExampleMacTitle") }}</p>
-              <p class="font-mono text-xs break-all opacity-80">{{ macHint }}</p>
-            </div>
-            <div>
-              <p class="font-medium">{{ t("settings.davExampleRcloneTitle") }}</p>
-              <pre class="font-mono text-xs whitespace-pre-wrap break-all opacity-80">{{ rcloneSnippet }}</pre>
-            </div>
+        <div class="flex gap-1 overflow-x-auto md:hidden">
+          <button
+            v-for="section in sections"
+            :key="section.key"
+            :class="[
+              'px-3 py-1.5 text-sm whitespace-nowrap',
+              active === section.key
+                ? 'bg-neutral-200/70 dark:bg-neutral-800 font-medium'
+                : 'hover:bg-neutral-200/40 dark:hover:bg-neutral-800/50',
+            ]"
+            @click="select(section.key)"
+          >
+            {{ section.label }}
+          </button>
+        </div>
+      </nav>
+
+      <div class="flex flex-col gap-8 max-w-lg min-w-0 grow">
+        <section v-show="active === 'general'" class="flex flex-col gap-6">
+          <h3 class="text-lg font-light">{{ t("settings.sectionGeneral") }}</h3>
+          <UFormField :label="t('settings.language')">
+            <LanguageSwitcher />
+          </UFormField>
+          <UFormField :label="t('theme.label')">
+            <ColorMode />
+          </UFormField>
+        </section>
+
+        <section v-show="active === 'dav'" class="flex flex-col gap-4 min-w-0">
+          <h3 class="text-lg font-light">{{ t("settings.dav") }}</h3>
+          <p class="text-sm opacity-70">{{ t("settings.davHint") }}</p>
+          <CopyField :label="t('settings.davPrimary')" :value="davUrl" />
+          <CopyField :label="t('settings.davAlias')" :value="webdavUrl" />
+          <UFormField :label="t('settings.davUsername')">
+            <UInput v-model="username" autocomplete="off" class="w-full">
+              <template #trailing>
+                <UButton
+                  :icon="copiedUser ? 'lucide:check' : 'lucide:copy'"
+                  color="neutral"
+                  variant="ghost"
+                  size="xs"
+                  :aria-label="t('settings.copy')"
+                  @click="copyUsername"
+                />
+              </template>
+            </UInput>
+          </UFormField>
+          <UFormField :label="t('settings.davPassword')" :error="error">
+            <UInput v-model="password" type="text" autocomplete="off" class="w-full">
+              <template #trailing>
+                <UButton
+                  :icon="copiedPass ? 'lucide:check' : 'lucide:copy'"
+                  color="neutral"
+                  variant="ghost"
+                  size="xs"
+                  :aria-label="t('settings.copy')"
+                  @click="copyPassword"
+                />
+              </template>
+            </UInput>
+          </UFormField>
+          <div class="flex items-center gap-4">
+            <UButton color="primary" variant="solid" :loading="saving" @click="saveDav">
+              {{ t("settings.saveDav") }}
+            </UButton>
+            <p v-if="saved" class="text-sm">{{ t("common.success") }}</p>
           </div>
-        </details>
+          <details class="text-sm">
+            <summary class="cursor-pointer opacity-80">{{ t("settings.davExamples") }}</summary>
+            <div class="mt-3 flex flex-col gap-3 min-w-0">
+              <div>
+                <p class="font-medium">{{ t("settings.davExampleWindowsTitle") }}</p>
+                <p class="font-mono text-xs break-all opacity-80">{{ windowsHint }}</p>
+              </div>
+              <div>
+                <p class="font-medium">{{ t("settings.davExampleMacTitle") }}</p>
+                <p class="font-mono text-xs break-all opacity-80">{{ macHint }}</p>
+              </div>
+              <div>
+                <p class="font-medium">{{ t("settings.davExampleRcloneTitle") }}</p>
+                <pre class="font-mono text-xs whitespace-pre-wrap break-all opacity-80">{{ rcloneSnippet }}</pre>
+              </div>
+            </div>
+          </details>
+        </section>
+
+        <section v-show="active === 'storage'">
+          <StorageManager />
+        </section>
+
+        <section v-show="active === 'sync'">
+          <SyncManager />
+        </section>
       </div>
-      <StorageManager />
-      <SyncManager />
     </div>
   </AppMain>
 </template>
